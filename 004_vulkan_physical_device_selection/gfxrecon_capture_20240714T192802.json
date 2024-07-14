@@ -1,0 +1,695 @@
+[
+{
+  "header": {
+    "source-path": "gfxrecon_capture_20240714T192802.gfxr",
+    "gfxrecon-version": "1.0.5-dev (dev:f37bb05) Debug",
+    "vulkan-version": "1.3.283"
+  }
+},
+{
+  "index": 0,
+  "meta": {
+    "name": "ExeFileInfo",
+    "args": {
+      "product_version": "",
+      "file_version": "",
+      "app_version": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "app_name": "./build/physical_device_selection",
+      "company_name": "",
+      "file_description": "",
+      "internal_name": "",
+      "original_filename": "",
+      "product_name": ""
+    }
+  }
+},
+{
+  "index": 1,
+  "annotation": {
+    "type": "kJson",
+    "label": "operation",
+    "data": "{\n    \"tool\": \"capture\",\n    \"timestamp\": \"2024-07-14T11:28:02Z\",\n    \"gfxrecon-version\": \"1.0.5-dev (dev:f37bb05) Debug\",\n    \"vulkan-version\": \"1.3.283\"\n}"
+  }
+},
+{
+  "index": 2,
+  "function": {
+    "name": "vkCreateInstance",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "pCreateInfo": {
+        "sType": "VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO",
+        "flags": "0x00000000",
+        "pApplicationInfo": {
+          "sType": "VK_STRUCTURE_TYPE_APPLICATION_INFO",
+          "pApplicationName": "Hello Triangle",
+          "applicationVersion": 4194304,
+          "pEngineName": "No Engine",
+          "engineVersion": 4194304,
+          "apiVersion": 4194304,
+          "pNext": null
+        },
+        "enabledLayerCount": 2,
+        "ppEnabledLayerNames": [
+          "VK_LAYER_KHRONOS_validation",
+          "VK_LAYER_LUNARG_gfxreconstruct"
+        ],
+        "enabledExtensionCount": 3,
+        "ppEnabledExtensionNames": [
+          "VK_KHR_surface",
+          "VK_KHR_wayland_surface",
+          "VK_EXT_debug_utils"
+        ],
+        "pNext": {
+          "sType": "VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT",
+          "flags": "0x00000000",
+          "messageSeverity": "0x00001101",
+          "messageType": "0x00000007",
+          "pfnUserCallback": "0x55d8cf213ec9",
+          "pUserData": "0x0",
+          "pNext": null
+        }
+      },
+      "pAllocator": null,
+      "pInstance": 1
+    }
+  }
+},
+{
+  "index": 3,
+  "function": {
+    "name": "vkEnumeratePhysicalDevices",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "instance": 1,
+      "pPhysicalDeviceCount": 1,
+      "pPhysicalDevices": null
+    }
+  }
+},
+{
+  "index": 4,
+  "function": {
+    "name": "vkEnumeratePhysicalDevices",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "instance": 1,
+      "pPhysicalDeviceCount": 1,
+      "pPhysicalDevices": [
+        2
+      ]
+    }
+  }
+},
+{
+  "index": 5,
+  "meta": {
+    "name": "SetDevicePropertiesCommand",
+    "args": {
+      "physical_device_id": 2,
+      "api_version": 4206870,
+      "driver_version": 100667393,
+      "vendor_id": 4098,
+      "device_id": 29679,
+      "device_type": 2,
+      "pipeline_cache_uuid": "18d15d8b7fe5bc788a7893c17adbafe5",
+      "device_name": "AMD Radeon RX 6650 XT (RADV NAVI23)"
+    }
+  }
+},
+{
+  "index": 6,
+  "meta": {
+    "name": "SetDeviceMemoryPropertiesCommand",
+    "args": {
+      "physical_device_id": 2
+    }
+  }
+},
+{
+  "index": 7,
+  "function": {
+    "name": "vkGetPhysicalDeviceQueueFamilyProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "pQueueFamilyPropertyCount": 3,
+      "pQueueFamilyProperties": null
+    }
+  }
+},
+{
+  "index": 8,
+  "function": {
+    "name": "vkGetPhysicalDeviceQueueFamilyProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "pQueueFamilyPropertyCount": 3,
+      "pQueueFamilyProperties": [
+        {
+          "queueFlags": "0x00000007",
+          "queueCount": 1,
+          "timestampValidBits": 64,
+          "minImageTransferGranularity": {
+            "width": 1,
+            "height": 1,
+            "depth": 1
+          }
+        },
+        {
+          "queueFlags": "0x00000006",
+          "queueCount": 4,
+          "timestampValidBits": 64,
+          "minImageTransferGranularity": {
+            "width": 1,
+            "height": 1,
+            "depth": 1
+          }
+        },
+        {
+          "queueFlags": "0x00000008",
+          "queueCount": 1,
+          "timestampValidBits": 64,
+          "minImageTransferGranularity": {
+            "width": 1,
+            "height": 1,
+            "depth": 1
+          }
+        }
+      ]
+    }
+  }
+},
+{
+  "index": 9,
+  "function": {
+    "name": "vkCreateDebugUtilsMessengerEXT",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "instance": 1,
+      "pCreateInfo": {
+        "sType": "VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT",
+        "flags": "0x00000000",
+        "messageSeverity": "0x00001101",
+        "messageType": "0x00000007",
+        "pfnUserCallback": "0x55d8cf213ec9",
+        "pUserData": "0x0",
+        "pNext": null
+      },
+      "pAllocator": null,
+      "pMessenger": 3
+    }
+  }
+},
+{
+  "index": 10,
+  "function": {
+    "name": "vkEnumeratePhysicalDevices",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "instance": 1,
+      "pPhysicalDeviceCount": 1,
+      "pPhysicalDevices": null
+    }
+  }
+},
+{
+  "index": 11,
+  "function": {
+    "name": "vkEnumeratePhysicalDevices",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "instance": 1,
+      "pPhysicalDeviceCount": 1,
+      "pPhysicalDevices": [
+        2
+      ]
+    }
+  }
+},
+{
+  "index": 12,
+  "function": {
+    "name": "vkGetPhysicalDeviceProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "pProperties": {
+        "apiVersion": 4206870,
+        "driverVersion": 100667393,
+        "vendorID": 4098,
+        "deviceID": 29679,
+        "deviceType": "VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU",
+        "deviceName": "AMD Radeon RX 6650 XT (RADV NAVI23)",
+        "pipelineCacheUUID": "18d15d8b7fe5bc788a7893c17adbafe5",
+        "limits": {
+          "maxImageDimension1D": 16384,
+          "maxImageDimension2D": 16384,
+          "maxImageDimension3D": 2048,
+          "maxImageDimensionCube": 16384,
+          "maxImageArrayLayers": 2048,
+          "maxTexelBufferElements": 4294967295,
+          "maxUniformBufferRange": 4294967295,
+          "maxStorageBufferRange": 4294967295,
+          "maxPushConstantsSize": 256,
+          "maxMemoryAllocationCount": 4294967295,
+          "maxSamplerAllocationCount": 65536,
+          "bufferImageGranularity": 1,
+          "sparseAddressSpaceSize": 4294967292,
+          "maxBoundDescriptorSets": 32,
+          "maxPerStageDescriptorSamplers": 8388606,
+          "maxPerStageDescriptorUniformBuffers": 8388606,
+          "maxPerStageDescriptorStorageBuffers": 8388606,
+          "maxPerStageDescriptorSampledImages": 8388606,
+          "maxPerStageDescriptorStorageImages": 8388606,
+          "maxPerStageDescriptorInputAttachments": 8388606,
+          "maxPerStageResources": 8388606,
+          "maxDescriptorSetSamplers": 8388606,
+          "maxDescriptorSetUniformBuffers": 8388606,
+          "maxDescriptorSetUniformBuffersDynamic": 16,
+          "maxDescriptorSetStorageBuffers": 8388606,
+          "maxDescriptorSetStorageBuffersDynamic": 8,
+          "maxDescriptorSetSampledImages": 8388606,
+          "maxDescriptorSetStorageImages": 8388606,
+          "maxDescriptorSetInputAttachments": 8388606,
+          "maxVertexInputAttributes": 32,
+          "maxVertexInputBindings": 32,
+          "maxVertexInputAttributeOffset": 4294967295,
+          "maxVertexInputBindingStride": 2048,
+          "maxVertexOutputComponents": 128,
+          "maxTessellationGenerationLevel": 64,
+          "maxTessellationPatchSize": 32,
+          "maxTessellationControlPerVertexInputComponents": 128,
+          "maxTessellationControlPerVertexOutputComponents": 128,
+          "maxTessellationControlPerPatchOutputComponents": 120,
+          "maxTessellationControlTotalOutputComponents": 4096,
+          "maxTessellationEvaluationInputComponents": 128,
+          "maxTessellationEvaluationOutputComponents": 128,
+          "maxGeometryShaderInvocations": 127,
+          "maxGeometryInputComponents": 64,
+          "maxGeometryOutputComponents": 128,
+          "maxGeometryOutputVertices": 256,
+          "maxGeometryTotalOutputComponents": 1024,
+          "maxFragmentInputComponents": 128,
+          "maxFragmentOutputAttachments": 8,
+          "maxFragmentDualSrcAttachments": 1,
+          "maxFragmentCombinedOutputResources": 8388606,
+          "maxComputeSharedMemorySize": 65536,
+          "maxComputeWorkGroupCount": [
+            65535,
+            65535,
+            65535
+          ],
+          "maxComputeWorkGroupInvocations": 1024,
+          "maxComputeWorkGroupSize": [
+            1024,
+            1024,
+            1024
+          ],
+          "subPixelPrecisionBits": 8,
+          "subTexelPrecisionBits": 8,
+          "mipmapPrecisionBits": 8,
+          "maxDrawIndexedIndexValue": 4294967295,
+          "maxDrawIndirectCount": 4294967295,
+          "maxSamplerLodBias": 16.0,
+          "maxSamplerAnisotropy": 16.0,
+          "maxViewports": 16,
+          "maxViewportDimensions": [
+            16384,
+            16384
+          ],
+          "viewportBoundsRange": [
+            -32768.0,
+            32767.0
+          ],
+          "viewportSubPixelBits": 8,
+          "minMemoryMapAlignment": 4096,
+          "minTexelBufferOffsetAlignment": 4,
+          "minUniformBufferOffsetAlignment": 4,
+          "minStorageBufferOffsetAlignment": 4,
+          "minTexelOffset": -32,
+          "maxTexelOffset": 31,
+          "minTexelGatherOffset": -32,
+          "maxTexelGatherOffset": 31,
+          "minInterpolationOffset": -2.0,
+          "maxInterpolationOffset": 2.0,
+          "subPixelInterpolationOffsetBits": 8,
+          "maxFramebufferWidth": 16384,
+          "maxFramebufferHeight": 16384,
+          "maxFramebufferLayers": 1024,
+          "framebufferColorSampleCounts": "0x0000000f",
+          "framebufferDepthSampleCounts": "0x0000000f",
+          "framebufferStencilSampleCounts": "0x0000000f",
+          "framebufferNoAttachmentsSampleCounts": "0x0000000f",
+          "maxColorAttachments": 8,
+          "sampledImageColorSampleCounts": "0x0000000f",
+          "sampledImageIntegerSampleCounts": "0x0000000f",
+          "sampledImageDepthSampleCounts": "0x0000000f",
+          "sampledImageStencilSampleCounts": "0x0000000f",
+          "storageImageSampleCounts": "0x0000000f",
+          "maxSampleMaskWords": 1,
+          "timestampComputeAndGraphics": true,
+          "timestampPeriod": 10.0,
+          "maxClipDistances": 8,
+          "maxCullDistances": 8,
+          "maxCombinedClipAndCullDistances": 8,
+          "discreteQueuePriorities": 2,
+          "pointSizeRange": [
+            0.0,
+            8191.875
+          ],
+          "lineWidthRange": [
+            0.0,
+            8.0
+          ],
+          "pointSizeGranularity": 0.125,
+          "lineWidthGranularity": 0.125,
+          "strictLines": false,
+          "standardSampleLocations": true,
+          "optimalBufferCopyOffsetAlignment": 1,
+          "optimalBufferCopyRowPitchAlignment": 1,
+          "nonCoherentAtomSize": 64
+        },
+        "sparseProperties": {
+          "residencyStandard2DBlockShape": true,
+          "residencyStandard2DMultisampleBlockShape": false,
+          "residencyStandard3DBlockShape": true,
+          "residencyAlignedMipSize": false,
+          "residencyNonResidentStrict": true
+        }
+      }
+    }
+  }
+},
+{
+  "index": 13,
+  "function": {
+    "name": "vkGetPhysicalDeviceProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "pProperties": {
+        "apiVersion": 4206870,
+        "driverVersion": 100667393,
+        "vendorID": 4098,
+        "deviceID": 29679,
+        "deviceType": "VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU",
+        "deviceName": "AMD Radeon RX 6650 XT (RADV NAVI23)",
+        "pipelineCacheUUID": "18d15d8b7fe5bc788a7893c17adbafe5",
+        "limits": {
+          "maxImageDimension1D": 16384,
+          "maxImageDimension2D": 16384,
+          "maxImageDimension3D": 2048,
+          "maxImageDimensionCube": 16384,
+          "maxImageArrayLayers": 2048,
+          "maxTexelBufferElements": 4294967295,
+          "maxUniformBufferRange": 4294967295,
+          "maxStorageBufferRange": 4294967295,
+          "maxPushConstantsSize": 256,
+          "maxMemoryAllocationCount": 4294967295,
+          "maxSamplerAllocationCount": 65536,
+          "bufferImageGranularity": 1,
+          "sparseAddressSpaceSize": 4294967292,
+          "maxBoundDescriptorSets": 32,
+          "maxPerStageDescriptorSamplers": 8388606,
+          "maxPerStageDescriptorUniformBuffers": 8388606,
+          "maxPerStageDescriptorStorageBuffers": 8388606,
+          "maxPerStageDescriptorSampledImages": 8388606,
+          "maxPerStageDescriptorStorageImages": 8388606,
+          "maxPerStageDescriptorInputAttachments": 8388606,
+          "maxPerStageResources": 8388606,
+          "maxDescriptorSetSamplers": 8388606,
+          "maxDescriptorSetUniformBuffers": 8388606,
+          "maxDescriptorSetUniformBuffersDynamic": 16,
+          "maxDescriptorSetStorageBuffers": 8388606,
+          "maxDescriptorSetStorageBuffersDynamic": 8,
+          "maxDescriptorSetSampledImages": 8388606,
+          "maxDescriptorSetStorageImages": 8388606,
+          "maxDescriptorSetInputAttachments": 8388606,
+          "maxVertexInputAttributes": 32,
+          "maxVertexInputBindings": 32,
+          "maxVertexInputAttributeOffset": 4294967295,
+          "maxVertexInputBindingStride": 2048,
+          "maxVertexOutputComponents": 128,
+          "maxTessellationGenerationLevel": 64,
+          "maxTessellationPatchSize": 32,
+          "maxTessellationControlPerVertexInputComponents": 128,
+          "maxTessellationControlPerVertexOutputComponents": 128,
+          "maxTessellationControlPerPatchOutputComponents": 120,
+          "maxTessellationControlTotalOutputComponents": 4096,
+          "maxTessellationEvaluationInputComponents": 128,
+          "maxTessellationEvaluationOutputComponents": 128,
+          "maxGeometryShaderInvocations": 127,
+          "maxGeometryInputComponents": 64,
+          "maxGeometryOutputComponents": 128,
+          "maxGeometryOutputVertices": 256,
+          "maxGeometryTotalOutputComponents": 1024,
+          "maxFragmentInputComponents": 128,
+          "maxFragmentOutputAttachments": 8,
+          "maxFragmentDualSrcAttachments": 1,
+          "maxFragmentCombinedOutputResources": 8388606,
+          "maxComputeSharedMemorySize": 65536,
+          "maxComputeWorkGroupCount": [
+            65535,
+            65535,
+            65535
+          ],
+          "maxComputeWorkGroupInvocations": 1024,
+          "maxComputeWorkGroupSize": [
+            1024,
+            1024,
+            1024
+          ],
+          "subPixelPrecisionBits": 8,
+          "subTexelPrecisionBits": 8,
+          "mipmapPrecisionBits": 8,
+          "maxDrawIndexedIndexValue": 4294967295,
+          "maxDrawIndirectCount": 4294967295,
+          "maxSamplerLodBias": 16.0,
+          "maxSamplerAnisotropy": 16.0,
+          "maxViewports": 16,
+          "maxViewportDimensions": [
+            16384,
+            16384
+          ],
+          "viewportBoundsRange": [
+            -32768.0,
+            32767.0
+          ],
+          "viewportSubPixelBits": 8,
+          "minMemoryMapAlignment": 4096,
+          "minTexelBufferOffsetAlignment": 4,
+          "minUniformBufferOffsetAlignment": 4,
+          "minStorageBufferOffsetAlignment": 4,
+          "minTexelOffset": -32,
+          "maxTexelOffset": 31,
+          "minTexelGatherOffset": -32,
+          "maxTexelGatherOffset": 31,
+          "minInterpolationOffset": -2.0,
+          "maxInterpolationOffset": 2.0,
+          "subPixelInterpolationOffsetBits": 8,
+          "maxFramebufferWidth": 16384,
+          "maxFramebufferHeight": 16384,
+          "maxFramebufferLayers": 1024,
+          "framebufferColorSampleCounts": "0x0000000f",
+          "framebufferDepthSampleCounts": "0x0000000f",
+          "framebufferStencilSampleCounts": "0x0000000f",
+          "framebufferNoAttachmentsSampleCounts": "0x0000000f",
+          "maxColorAttachments": 8,
+          "sampledImageColorSampleCounts": "0x0000000f",
+          "sampledImageIntegerSampleCounts": "0x0000000f",
+          "sampledImageDepthSampleCounts": "0x0000000f",
+          "sampledImageStencilSampleCounts": "0x0000000f",
+          "storageImageSampleCounts": "0x0000000f",
+          "maxSampleMaskWords": 1,
+          "timestampComputeAndGraphics": true,
+          "timestampPeriod": 10.0,
+          "maxClipDistances": 8,
+          "maxCullDistances": 8,
+          "maxCombinedClipAndCullDistances": 8,
+          "discreteQueuePriorities": 2,
+          "pointSizeRange": [
+            0.0,
+            8191.875
+          ],
+          "lineWidthRange": [
+            0.0,
+            8.0
+          ],
+          "pointSizeGranularity": 0.125,
+          "lineWidthGranularity": 0.125,
+          "strictLines": false,
+          "standardSampleLocations": true,
+          "optimalBufferCopyOffsetAlignment": 1,
+          "optimalBufferCopyRowPitchAlignment": 1,
+          "nonCoherentAtomSize": 64
+        },
+        "sparseProperties": {
+          "residencyStandard2DBlockShape": true,
+          "residencyStandard2DMultisampleBlockShape": false,
+          "residencyStandard3DBlockShape": true,
+          "residencyAlignedMipSize": false,
+          "residencyNonResidentStrict": true
+        }
+      }
+    }
+  }
+},
+{
+  "index": 14,
+  "function": {
+    "name": "vkGetPhysicalDeviceFeatures",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "pFeatures": {
+        "robustBufferAccess": true,
+        "fullDrawIndexUint32": true,
+        "imageCubeArray": true,
+        "independentBlend": true,
+        "geometryShader": true,
+        "tessellationShader": true,
+        "sampleRateShading": true,
+        "dualSrcBlend": true,
+        "logicOp": true,
+        "multiDrawIndirect": true,
+        "drawIndirectFirstInstance": true,
+        "depthClamp": true,
+        "depthBiasClamp": true,
+        "fillModeNonSolid": true,
+        "depthBounds": true,
+        "wideLines": true,
+        "largePoints": true,
+        "alphaToOne": true,
+        "multiViewport": true,
+        "samplerAnisotropy": true,
+        "textureCompressionETC2": false,
+        "textureCompressionASTC_LDR": false,
+        "textureCompressionBC": true,
+        "occlusionQueryPrecise": true,
+        "pipelineStatisticsQuery": true,
+        "vertexPipelineStoresAndAtomics": true,
+        "fragmentStoresAndAtomics": true,
+        "shaderTessellationAndGeometryPointSize": true,
+        "shaderImageGatherExtended": true,
+        "shaderStorageImageExtendedFormats": true,
+        "shaderStorageImageMultisample": true,
+        "shaderStorageImageReadWithoutFormat": true,
+        "shaderStorageImageWriteWithoutFormat": true,
+        "shaderUniformBufferArrayDynamicIndexing": true,
+        "shaderSampledImageArrayDynamicIndexing": true,
+        "shaderStorageBufferArrayDynamicIndexing": true,
+        "shaderStorageImageArrayDynamicIndexing": true,
+        "shaderClipDistance": true,
+        "shaderCullDistance": true,
+        "shaderFloat64": true,
+        "shaderInt64": true,
+        "shaderInt16": true,
+        "shaderResourceResidency": true,
+        "shaderResourceMinLod": true,
+        "sparseBinding": true,
+        "sparseResidencyBuffer": true,
+        "sparseResidencyImage2D": true,
+        "sparseResidencyImage3D": true,
+        "sparseResidency2Samples": false,
+        "sparseResidency4Samples": false,
+        "sparseResidency8Samples": false,
+        "sparseResidency16Samples": false,
+        "sparseResidencyAliased": true,
+        "variableMultisampleRate": true,
+        "inheritedQueries": true
+      }
+    }
+  }
+},
+{
+  "index": 15,
+  "function": {
+    "name": "vkGetPhysicalDeviceQueueFamilyProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "pQueueFamilyPropertyCount": 3,
+      "pQueueFamilyProperties": null
+    }
+  }
+},
+{
+  "index": 16,
+  "function": {
+    "name": "vkGetPhysicalDeviceQueueFamilyProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "pQueueFamilyPropertyCount": 3,
+      "pQueueFamilyProperties": [
+        {
+          "queueFlags": "0x00000007",
+          "queueCount": 1,
+          "timestampValidBits": 64,
+          "minImageTransferGranularity": {
+            "width": 1,
+            "height": 1,
+            "depth": 1
+          }
+        },
+        {
+          "queueFlags": "0x00000006",
+          "queueCount": 4,
+          "timestampValidBits": 64,
+          "minImageTransferGranularity": {
+            "width": 1,
+            "height": 1,
+            "depth": 1
+          }
+        },
+        {
+          "queueFlags": "0x00000008",
+          "queueCount": 1,
+          "timestampValidBits": 64,
+          "minImageTransferGranularity": {
+            "width": 1,
+            "height": 1,
+            "depth": 1
+          }
+        }
+      ]
+    }
+  }
+},
+{
+  "index": 17,
+  "function": {
+    "name": "vkDestroyDebugUtilsMessengerEXT",
+    "thread": 1,
+    "args": {
+      "instance": 1,
+      "messenger": 3,
+      "pAllocator": null
+    }
+  }
+},
+{
+  "index": 18,
+  "function": {
+    "name": "vkDestroyInstance",
+    "thread": 1,
+    "args": {
+      "instance": 1,
+      "pAllocator": null
+    }
+  }
+}
+]
