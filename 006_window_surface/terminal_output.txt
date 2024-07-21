@@ -1,0 +1,53 @@
+[2024-07-21 11:49:43.929] [debug] checkValidationLayerSupport layers[0]: VK_LAYER_RENDERDOC_Capture
+[2024-07-21 11:49:43.929] [debug] checkValidationLayerSupport       description:Debugging capture layer for RenderDoc
+[2024-07-21 11:49:43.929] [debug] checkValidationLayerSupport layers[1]: VK_LAYER_VALVE_steam_fossilize_64
+[2024-07-21 11:49:43.929] [debug] checkValidationLayerSupport       description:Steam Pipeline Caching Layer
+[2024-07-21 11:49:43.929] [debug] checkValidationLayerSupport layers[2]: VK_LAYER_VALVE_steam_overlay_64
+[2024-07-21 11:49:43.929] [debug] checkValidationLayerSupport       description:Steam Overlay Layer
+[2024-07-21 11:49:43.929] [debug] checkValidationLayerSupport layers[3]: VK_LAYER_VALVE_steam_overlay_32
+[2024-07-21 11:49:43.929] [debug] checkValidationLayerSupport       description:Steam Overlay Layer
+[2024-07-21 11:49:43.929] [debug] checkValidationLayerSupport layers[4]: VK_LAYER_VALVE_steam_fossilize_32
+[2024-07-21 11:49:43.929] [debug] checkValidationLayerSupport       description:Steam Pipeline Caching Layer
+[2024-07-21 11:49:43.929] [debug] checkValidationLayerSupport layers[5]: VK_LAYER_LUNARG_api_dump
+[2024-07-21 11:49:43.929] [debug] checkValidationLayerSupport       description:LunarG API dump layer
+[2024-07-21 11:49:43.929] [debug] checkValidationLayerSupport layers[6]: VK_LAYER_LUNARG_screenshot
+[2024-07-21 11:49:43.929] [debug] checkValidationLayerSupport       description:LunarG image capture layer
+[2024-07-21 11:49:43.929] [debug] checkValidationLayerSupport layers[7]: VK_LAYER_LUNARG_monitor
+[2024-07-21 11:49:43.929] [debug] checkValidationLayerSupport       description:Execution Monitoring Layer
+[2024-07-21 11:49:43.929] [debug] checkValidationLayerSupport layers[8]: VK_LAYER_LUNARG_gfxreconstruct
+[2024-07-21 11:49:43.929] [debug] checkValidationLayerSupport       description:GFXReconstruct Capture Layer Version 1.0.5-dev
+[2024-07-21 11:49:43.929] [debug] checkValidationLayerSupport layers[9]: VK_LAYER_KHRONOS_validation
+[2024-07-21 11:49:43.929] [debug] checkValidationLayerSupport       description:Khronos Validation Layer
+[2024-07-21 11:49:43.929] [trace] checkValidationLayerSupport find layer [VK_LAYER_KHRONOS_validation]
+[2024-07-21 11:49:43.929] [trace] checkValidationLayerSupport find layer [VK_LAYER_LUNARG_gfxreconstruct]
+[2024-07-21 11:49:43.940] [trace] getRequiredExtensions glfwExtension: VK_KHR_surface
+[2024-07-21 11:49:43.940] [trace] getRequiredExtensions glfwExtension: VK_KHR_wayland_surface
+[2024-07-21 11:49:43.940] [trace] populateDebugMessengerCreateInfo
+[2024-07-21 11:49:43.941] [trace] [debugCallback]: layer: Searching for ICD drivers named /usr/lib32/libvulkan_intel_hasvk.so
+[2024-07-21 11:49:43.941] [trace] [debugCallback]: layer: Searching for ICD drivers named /usr/lib32/libvulkan_radeon.so
+[2024-07-21 11:49:43.941] [trace] [debugCallback]: layer: Searching for ICD drivers named /usr/lib/libvulkan_intel.so
+[2024-07-21 11:49:43.941] [trace] [debugCallback]: layer: Searching for ICD drivers named /usr/lib32/libvulkan_intel.so
+[2024-07-21 11:49:43.941] [trace] [debugCallback]: layer: Searching for ICD drivers named /usr/lib/libvulkan_radeon.so
+[2024-07-21 11:49:43.941] [trace] [debugCallback]: layer: Searching for ICD drivers named /usr/lib/libvulkan_intel_hasvk.so
+[2024-07-21 11:49:43.942] [trace] [debugCallback]: layer: Loading layer library libVkLayer_gfxreconstruct.so
+[2024-07-21 11:49:43.968] [trace] [debugCallback]: layer: Loading layer library libVkLayer_khronos_validation.so
+[gfxrecon] INFO - Initializing GFXReconstruct capture layer
+[gfxrecon] INFO -   GFXReconstruct Version 1.0.5-dev (dev:f37bb05) Debug
+[gfxrecon] INFO - Recording graphics API capture to gfxrecon_capture_20240721T114943.gfxr
+[gfxrecon] INFO -   Vulkan Header Version 1.3.283
+[2024-07-21 11:49:43.974] [trace] [debugCallback]: layer: Copying old device 0 into new device 0
+[2024-07-21 11:49:43.975] [trace] populateDebugMessengerCreateInfo
+[2024-07-21 11:49:43.975] [trace] [debugCallback]: layer: Copying old device 0 into new device 0
+[2024-07-21 11:49:43.975] [trace] [debugCallback]: layer: Copying old device 0 into new device 0
+[2024-07-21 11:49:43.975] [trace] for device: AMD Radeon RX 6650 XT (RADV NAVI23)
+[2024-07-21 11:49:43.975] [trace]     apiVersion: 1.3.278
+[2024-07-21 11:49:43.975] [trace]     driverVersion: 24.1.3
+[2024-07-21 11:49:43.975] [trace]     vendorID: 1002
+[2024-07-21 11:49:43.975] [trace]     deviceID: 73ef
+[2024-07-21 11:49:43.975] [trace] findQueueFamilies get device queue family counts 3
+[2024-07-21 11:49:43.975] [trace] findQueueFamilies queueFlags: 7
+[2024-07-21 11:49:43.975] [trace] findQueueFamilies get device queue family counts 3
+[2024-07-21 11:49:43.975] [trace] findQueueFamilies queueFlags: 7
+[2024-07-21 11:49:50.636] [trace] DestroyDebugUtilsMessengerEXT call vkDestroyDebugUtilsMessengerEXT
+[2024-07-21 11:49:50.636] [trace] [debugCallback]: layer: Unloading layer library libVkLayer_gfxreconstruct.so
+[2024-07-21 11:49:50.647] [trace] [debugCallback]: layer: Unloading layer library libVkLayer_khronos_validation.so

@@ -1,8 +1,4 @@
-
-
 # [gfxreconstruct](https://github.com/LunarG/gfxreconstruct)
-
-
 
 可以使用 gfxrecon-convert  将 gfxr 文件转为 json 文件，从 json 文件中可以看到每一次的 vulkan 的 api 的调用和参数信息
 
