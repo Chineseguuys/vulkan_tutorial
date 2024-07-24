@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <cstdint>
 #include <set>
 #include <spdlog/common.h>
@@ -691,6 +692,72 @@ private:
                 throw std::runtime_error("failed to create image view");
             }
         }
+    }
+
+    void createGraphicPipeline() {
+        auto vertShaderCode = readFile("shader/vert.spv");
+        auto fragShaderCode = readFile("shader/frag.spv");
+
+
+        VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
+        VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
+
+        // Todo
+        VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
+        vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+        vertShaderStageInfo.module = vertShaderModule;
+        vertShaderStageInfo.pName = "main";
+
+        VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
+        fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+        fragShaderStageInfo.module = fragShaderModule;
+        fragShaderStageInfo.pName = "main";
+
+        VkPipelineShaderStageCreateInfo shaderStages[] = {
+            vertShaderStageInfo, 
+            fragShaderStageInfo
+        };
+
+        // destroy the shader module, we do not need to keep it
+        vkDestroyShaderModule(mDevice, fragShaderModule, nullptr);
+        vkDestroyShaderModule(mDevice, vertShaderModule, nullptr);
+    }
+
+    // 二进制的 SPIR-V 代码需要转化为 VkShaderModule 对象
+    VkShaderModule createShaderModule(const std::vector<char>& code) {
+        VkShaderModuleCreateInfo createInfo{};
+        createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+        createInfo.codeSize = code.size();
+        createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
+        createInfo.pNext = nullptr;
+
+        VkShaderModule shaderModule;
+        if (vkCreateShaderModule(mDevice, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
+            spdlog::error("{} failed to create shader module", __func__);
+            throw std::runtime_error("failed to create shader module");
+        }
+
+        return shaderModule;
+    }
+
+    static std::vector<char> readFile(const std::string& fileName) {
+        std::ifstream file(fileName, std::ios::ate | std::ios::binary);
+        
+        if (!file.is_open()) {
+            spdlog::error("{} failed to open file {}", __func__, fileName);
+            throw std::runtime_error("failed to open file");
+        }
+
+        uint32_t fileSize = file.tellg();
+        std::vector<char> buffer(fileSize);
+        spdlog::trace("{} read {} bytes from file {}", __func__, fileSize, fileName);
+        file.seekg(0);
+        file.read(buffer.data(), fileSize);
+        file.close();
+
+        return buffer;
     }
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
