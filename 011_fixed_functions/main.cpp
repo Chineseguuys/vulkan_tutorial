@@ -143,6 +143,7 @@ private:
         createLogicalDevice();
         createSwapChain();
         createImageViews();
+        createGraphicPipeline();
     }
 
     void createSurface() {

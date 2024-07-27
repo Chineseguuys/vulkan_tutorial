@@ -213,8 +213,6 @@ finalColor = finalColor & colorWriteMask;
 
 如果 `blendEnable` 设置为 `VK_FALSE`，那么来自片段着色器的新颜色将不加修改地通过。 否则，将执行两次混合操作来计算新颜色。 生成的颜色会与 `colorWriteMask` 进行 `AND` 运算，以确定哪些通道会实际通过。
 
-
-
 第二个结构引用所有帧缓冲区的结构数组，并允许设置混合常数，在上述计算中用作混合因子。
 
 ```c
@@ -231,8 +229,6 @@ colorBlending.blendConstants[3] = 0.0f; // Optional
 ```
 
 如果要使用第二种混合方法（位运算组合），则应将 `logicOpEnable` 设置为 `VK_TRUE`。 然后可以在 `logicOp` 字段中指定位操作。 请注意，这将自动禁用第一个方法，就好像您将每个附加帧缓冲的 `blendEnable` 设置为 `VK_FALSE`！ 在此模式下，还将使用 `colorWriteMask` 来确定帧缓冲中哪些通道将受到实际影响。 也可以禁用这两种模式，就像我们在这里所做的那样，在这种情况下，片段颜色将不加修改地写入帧缓冲器。
-
-
 
 ## Pipeline layout
 
