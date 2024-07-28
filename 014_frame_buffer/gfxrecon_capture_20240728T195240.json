@@ -1,0 +1,3086 @@
+[
+{
+  "header": {
+    "source-path": "gfxrecon_capture_20240728T195240.gfxr",
+    "gfxrecon-version": "1.0.5-dev (dev:f37bb05) Debug",
+    "vulkan-version": "1.3.283"
+  }
+},
+{
+  "index": 0,
+  "meta": {
+    "name": "ExeFileInfo",
+    "args": {
+      "product_version": "",
+      "file_version": "",
+      "app_version": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "app_name": "./build/linux/x86_64/debug/frame_buffer",
+      "company_name": "",
+      "file_description": "",
+      "internal_name": "",
+      "original_filename": "",
+      "product_name": ""
+    }
+  }
+},
+{
+  "index": 1,
+  "annotation": {
+    "type": "kJson",
+    "label": "operation",
+    "data": "{\n    \"tool\": \"capture\",\n    \"timestamp\": \"2024-07-28T11:52:40Z\",\n    \"gfxrecon-version\": \"1.0.5-dev (dev:f37bb05) Debug\",\n    \"vulkan-version\": \"1.3.283\"\n}"
+  }
+},
+{
+  "index": 2,
+  "function": {
+    "name": "vkCreateInstance",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "pCreateInfo": {
+        "sType": "VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO",
+        "flags": "0x00000000",
+        "pApplicationInfo": {
+          "sType": "VK_STRUCTURE_TYPE_APPLICATION_INFO",
+          "pApplicationName": "Hello Triangle",
+          "applicationVersion": 4194304,
+          "pEngineName": "No Engine",
+          "engineVersion": 4194304,
+          "apiVersion": 4194304,
+          "pNext": null
+        },
+        "enabledLayerCount": 2,
+        "ppEnabledLayerNames": [
+          "VK_LAYER_KHRONOS_validation",
+          "VK_LAYER_LUNARG_gfxreconstruct"
+        ],
+        "enabledExtensionCount": 3,
+        "ppEnabledExtensionNames": [
+          "VK_KHR_surface",
+          "VK_KHR_wayland_surface",
+          "VK_EXT_debug_utils"
+        ],
+        "pNext": {
+          "sType": "VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT",
+          "flags": "0x00000000",
+          "messageSeverity": "0x00001101",
+          "messageType": "0x00000007",
+          "pfnUserCallback": "0x55696b528b58",
+          "pUserData": "0x0",
+          "pNext": null
+        }
+      },
+      "pAllocator": null,
+      "pInstance": 1
+    }
+  }
+},
+{
+  "index": 3,
+  "function": {
+    "name": "vkEnumeratePhysicalDevices",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "instance": 1,
+      "pPhysicalDeviceCount": 1,
+      "pPhysicalDevices": null
+    }
+  }
+},
+{
+  "index": 4,
+  "function": {
+    "name": "vkEnumeratePhysicalDevices",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "instance": 1,
+      "pPhysicalDeviceCount": 1,
+      "pPhysicalDevices": [
+        2
+      ]
+    }
+  }
+},
+{
+  "index": 5,
+  "meta": {
+    "name": "SetDevicePropertiesCommand",
+    "args": {
+      "physical_device_id": 2,
+      "api_version": 4206870,
+      "driver_version": 100667395,
+      "vendor_id": 4098,
+      "device_id": 29679,
+      "device_type": 2,
+      "pipeline_cache_uuid": "1e578365641e583fe1936ed83f7648a8",
+      "device_name": "AMD Radeon RX 6650 XT (RADV NAVI23)"
+    }
+  }
+},
+{
+  "index": 6,
+  "meta": {
+    "name": "SetDeviceMemoryPropertiesCommand",
+    "args": {
+      "physical_device_id": 2
+    }
+  }
+},
+{
+  "index": 7,
+  "function": {
+    "name": "vkGetPhysicalDeviceQueueFamilyProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "pQueueFamilyPropertyCount": 3,
+      "pQueueFamilyProperties": null
+    }
+  }
+},
+{
+  "index": 8,
+  "function": {
+    "name": "vkGetPhysicalDeviceQueueFamilyProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "pQueueFamilyPropertyCount": 3,
+      "pQueueFamilyProperties": [
+        {
+          "queueFlags": "0x00000007",
+          "queueCount": 1,
+          "timestampValidBits": 64,
+          "minImageTransferGranularity": {
+            "width": 1,
+            "height": 1,
+            "depth": 1
+          }
+        },
+        {
+          "queueFlags": "0x00000006",
+          "queueCount": 4,
+          "timestampValidBits": 64,
+          "minImageTransferGranularity": {
+            "width": 1,
+            "height": 1,
+            "depth": 1
+          }
+        },
+        {
+          "queueFlags": "0x00000008",
+          "queueCount": 1,
+          "timestampValidBits": 64,
+          "minImageTransferGranularity": {
+            "width": 1,
+            "height": 1,
+            "depth": 1
+          }
+        }
+      ]
+    }
+  }
+},
+{
+  "index": 9,
+  "function": {
+    "name": "vkCreateDebugUtilsMessengerEXT",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "instance": 1,
+      "pCreateInfo": {
+        "sType": "VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT",
+        "flags": "0x00000000",
+        "messageSeverity": "0x00001101",
+        "messageType": "0x00000007",
+        "pfnUserCallback": "0x55696b528b58",
+        "pUserData": "0x0",
+        "pNext": null
+      },
+      "pAllocator": null,
+      "pMessenger": 3
+    }
+  }
+},
+{
+  "index": 10,
+  "function": {
+    "name": "vkCreateWaylandSurfaceKHR",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "instance": 1,
+      "pCreateInfo": {
+        "sType": "VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR",
+        "flags": "0x00000000",
+        "display": 93911285920512,
+        "surface": 93911287827760,
+        "pNext": null
+      },
+      "pAllocator": null,
+      "pSurface": 4
+    }
+  }
+},
+{
+  "index": 11,
+  "function": {
+    "name": "vkEnumeratePhysicalDevices",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "instance": 1,
+      "pPhysicalDeviceCount": 1,
+      "pPhysicalDevices": null
+    }
+  }
+},
+{
+  "index": 12,
+  "function": {
+    "name": "vkEnumeratePhysicalDevices",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "instance": 1,
+      "pPhysicalDeviceCount": 1,
+      "pPhysicalDevices": [
+        2
+      ]
+    }
+  }
+},
+{
+  "index": 13,
+  "function": {
+    "name": "vkGetPhysicalDeviceProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "pProperties": {
+        "apiVersion": 4206870,
+        "driverVersion": 100667395,
+        "vendorID": 4098,
+        "deviceID": 29679,
+        "deviceType": "VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU",
+        "deviceName": "AMD Radeon RX 6650 XT (RADV NAVI23)",
+        "pipelineCacheUUID": "1e578365641e583fe1936ed83f7648a8",
+        "limits": {
+          "maxImageDimension1D": 16384,
+          "maxImageDimension2D": 16384,
+          "maxImageDimension3D": 2048,
+          "maxImageDimensionCube": 16384,
+          "maxImageArrayLayers": 2048,
+          "maxTexelBufferElements": 4294967295,
+          "maxUniformBufferRange": 4294967295,
+          "maxStorageBufferRange": 4294967295,
+          "maxPushConstantsSize": 256,
+          "maxMemoryAllocationCount": 4294967295,
+          "maxSamplerAllocationCount": 65536,
+          "bufferImageGranularity": 1,
+          "sparseAddressSpaceSize": 4294967292,
+          "maxBoundDescriptorSets": 32,
+          "maxPerStageDescriptorSamplers": 8388606,
+          "maxPerStageDescriptorUniformBuffers": 8388606,
+          "maxPerStageDescriptorStorageBuffers": 8388606,
+          "maxPerStageDescriptorSampledImages": 8388606,
+          "maxPerStageDescriptorStorageImages": 8388606,
+          "maxPerStageDescriptorInputAttachments": 8388606,
+          "maxPerStageResources": 8388606,
+          "maxDescriptorSetSamplers": 8388606,
+          "maxDescriptorSetUniformBuffers": 8388606,
+          "maxDescriptorSetUniformBuffersDynamic": 16,
+          "maxDescriptorSetStorageBuffers": 8388606,
+          "maxDescriptorSetStorageBuffersDynamic": 8,
+          "maxDescriptorSetSampledImages": 8388606,
+          "maxDescriptorSetStorageImages": 8388606,
+          "maxDescriptorSetInputAttachments": 8388606,
+          "maxVertexInputAttributes": 32,
+          "maxVertexInputBindings": 32,
+          "maxVertexInputAttributeOffset": 4294967295,
+          "maxVertexInputBindingStride": 2048,
+          "maxVertexOutputComponents": 128,
+          "maxTessellationGenerationLevel": 64,
+          "maxTessellationPatchSize": 32,
+          "maxTessellationControlPerVertexInputComponents": 128,
+          "maxTessellationControlPerVertexOutputComponents": 128,
+          "maxTessellationControlPerPatchOutputComponents": 120,
+          "maxTessellationControlTotalOutputComponents": 4096,
+          "maxTessellationEvaluationInputComponents": 128,
+          "maxTessellationEvaluationOutputComponents": 128,
+          "maxGeometryShaderInvocations": 127,
+          "maxGeometryInputComponents": 64,
+          "maxGeometryOutputComponents": 128,
+          "maxGeometryOutputVertices": 256,
+          "maxGeometryTotalOutputComponents": 1024,
+          "maxFragmentInputComponents": 128,
+          "maxFragmentOutputAttachments": 8,
+          "maxFragmentDualSrcAttachments": 1,
+          "maxFragmentCombinedOutputResources": 8388606,
+          "maxComputeSharedMemorySize": 65536,
+          "maxComputeWorkGroupCount": [
+            65535,
+            65535,
+            65535
+          ],
+          "maxComputeWorkGroupInvocations": 1024,
+          "maxComputeWorkGroupSize": [
+            1024,
+            1024,
+            1024
+          ],
+          "subPixelPrecisionBits": 8,
+          "subTexelPrecisionBits": 8,
+          "mipmapPrecisionBits": 8,
+          "maxDrawIndexedIndexValue": 4294967295,
+          "maxDrawIndirectCount": 4294967295,
+          "maxSamplerLodBias": 16.0,
+          "maxSamplerAnisotropy": 16.0,
+          "maxViewports": 16,
+          "maxViewportDimensions": [
+            16384,
+            16384
+          ],
+          "viewportBoundsRange": [
+            -32768.0,
+            32767.0
+          ],
+          "viewportSubPixelBits": 8,
+          "minMemoryMapAlignment": 4096,
+          "minTexelBufferOffsetAlignment": 4,
+          "minUniformBufferOffsetAlignment": 4,
+          "minStorageBufferOffsetAlignment": 4,
+          "minTexelOffset": -32,
+          "maxTexelOffset": 31,
+          "minTexelGatherOffset": -32,
+          "maxTexelGatherOffset": 31,
+          "minInterpolationOffset": -2.0,
+          "maxInterpolationOffset": 2.0,
+          "subPixelInterpolationOffsetBits": 8,
+          "maxFramebufferWidth": 16384,
+          "maxFramebufferHeight": 16384,
+          "maxFramebufferLayers": 1024,
+          "framebufferColorSampleCounts": "0x0000000f",
+          "framebufferDepthSampleCounts": "0x0000000f",
+          "framebufferStencilSampleCounts": "0x0000000f",
+          "framebufferNoAttachmentsSampleCounts": "0x0000000f",
+          "maxColorAttachments": 8,
+          "sampledImageColorSampleCounts": "0x0000000f",
+          "sampledImageIntegerSampleCounts": "0x0000000f",
+          "sampledImageDepthSampleCounts": "0x0000000f",
+          "sampledImageStencilSampleCounts": "0x0000000f",
+          "storageImageSampleCounts": "0x0000000f",
+          "maxSampleMaskWords": 1,
+          "timestampComputeAndGraphics": true,
+          "timestampPeriod": 10.0,
+          "maxClipDistances": 8,
+          "maxCullDistances": 8,
+          "maxCombinedClipAndCullDistances": 8,
+          "discreteQueuePriorities": 2,
+          "pointSizeRange": [
+            0.0,
+            8191.875
+          ],
+          "lineWidthRange": [
+            0.0,
+            8.0
+          ],
+          "pointSizeGranularity": 0.125,
+          "lineWidthGranularity": 0.125,
+          "strictLines": false,
+          "standardSampleLocations": true,
+          "optimalBufferCopyOffsetAlignment": 1,
+          "optimalBufferCopyRowPitchAlignment": 1,
+          "nonCoherentAtomSize": 64
+        },
+        "sparseProperties": {
+          "residencyStandard2DBlockShape": true,
+          "residencyStandard2DMultisampleBlockShape": false,
+          "residencyStandard3DBlockShape": true,
+          "residencyAlignedMipSize": false,
+          "residencyNonResidentStrict": true
+        }
+      }
+    }
+  }
+},
+{
+  "index": 14,
+  "function": {
+    "name": "vkGetPhysicalDeviceProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "pProperties": {
+        "apiVersion": 4206870,
+        "driverVersion": 100667395,
+        "vendorID": 4098,
+        "deviceID": 29679,
+        "deviceType": "VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU",
+        "deviceName": "AMD Radeon RX 6650 XT (RADV NAVI23)",
+        "pipelineCacheUUID": "1e578365641e583fe1936ed83f7648a8",
+        "limits": {
+          "maxImageDimension1D": 16384,
+          "maxImageDimension2D": 16384,
+          "maxImageDimension3D": 2048,
+          "maxImageDimensionCube": 16384,
+          "maxImageArrayLayers": 2048,
+          "maxTexelBufferElements": 4294967295,
+          "maxUniformBufferRange": 4294967295,
+          "maxStorageBufferRange": 4294967295,
+          "maxPushConstantsSize": 256,
+          "maxMemoryAllocationCount": 4294967295,
+          "maxSamplerAllocationCount": 65536,
+          "bufferImageGranularity": 1,
+          "sparseAddressSpaceSize": 4294967292,
+          "maxBoundDescriptorSets": 32,
+          "maxPerStageDescriptorSamplers": 8388606,
+          "maxPerStageDescriptorUniformBuffers": 8388606,
+          "maxPerStageDescriptorStorageBuffers": 8388606,
+          "maxPerStageDescriptorSampledImages": 8388606,
+          "maxPerStageDescriptorStorageImages": 8388606,
+          "maxPerStageDescriptorInputAttachments": 8388606,
+          "maxPerStageResources": 8388606,
+          "maxDescriptorSetSamplers": 8388606,
+          "maxDescriptorSetUniformBuffers": 8388606,
+          "maxDescriptorSetUniformBuffersDynamic": 16,
+          "maxDescriptorSetStorageBuffers": 8388606,
+          "maxDescriptorSetStorageBuffersDynamic": 8,
+          "maxDescriptorSetSampledImages": 8388606,
+          "maxDescriptorSetStorageImages": 8388606,
+          "maxDescriptorSetInputAttachments": 8388606,
+          "maxVertexInputAttributes": 32,
+          "maxVertexInputBindings": 32,
+          "maxVertexInputAttributeOffset": 4294967295,
+          "maxVertexInputBindingStride": 2048,
+          "maxVertexOutputComponents": 128,
+          "maxTessellationGenerationLevel": 64,
+          "maxTessellationPatchSize": 32,
+          "maxTessellationControlPerVertexInputComponents": 128,
+          "maxTessellationControlPerVertexOutputComponents": 128,
+          "maxTessellationControlPerPatchOutputComponents": 120,
+          "maxTessellationControlTotalOutputComponents": 4096,
+          "maxTessellationEvaluationInputComponents": 128,
+          "maxTessellationEvaluationOutputComponents": 128,
+          "maxGeometryShaderInvocations": 127,
+          "maxGeometryInputComponents": 64,
+          "maxGeometryOutputComponents": 128,
+          "maxGeometryOutputVertices": 256,
+          "maxGeometryTotalOutputComponents": 1024,
+          "maxFragmentInputComponents": 128,
+          "maxFragmentOutputAttachments": 8,
+          "maxFragmentDualSrcAttachments": 1,
+          "maxFragmentCombinedOutputResources": 8388606,
+          "maxComputeSharedMemorySize": 65536,
+          "maxComputeWorkGroupCount": [
+            65535,
+            65535,
+            65535
+          ],
+          "maxComputeWorkGroupInvocations": 1024,
+          "maxComputeWorkGroupSize": [
+            1024,
+            1024,
+            1024
+          ],
+          "subPixelPrecisionBits": 8,
+          "subTexelPrecisionBits": 8,
+          "mipmapPrecisionBits": 8,
+          "maxDrawIndexedIndexValue": 4294967295,
+          "maxDrawIndirectCount": 4294967295,
+          "maxSamplerLodBias": 16.0,
+          "maxSamplerAnisotropy": 16.0,
+          "maxViewports": 16,
+          "maxViewportDimensions": [
+            16384,
+            16384
+          ],
+          "viewportBoundsRange": [
+            -32768.0,
+            32767.0
+          ],
+          "viewportSubPixelBits": 8,
+          "minMemoryMapAlignment": 4096,
+          "minTexelBufferOffsetAlignment": 4,
+          "minUniformBufferOffsetAlignment": 4,
+          "minStorageBufferOffsetAlignment": 4,
+          "minTexelOffset": -32,
+          "maxTexelOffset": 31,
+          "minTexelGatherOffset": -32,
+          "maxTexelGatherOffset": 31,
+          "minInterpolationOffset": -2.0,
+          "maxInterpolationOffset": 2.0,
+          "subPixelInterpolationOffsetBits": 8,
+          "maxFramebufferWidth": 16384,
+          "maxFramebufferHeight": 16384,
+          "maxFramebufferLayers": 1024,
+          "framebufferColorSampleCounts": "0x0000000f",
+          "framebufferDepthSampleCounts": "0x0000000f",
+          "framebufferStencilSampleCounts": "0x0000000f",
+          "framebufferNoAttachmentsSampleCounts": "0x0000000f",
+          "maxColorAttachments": 8,
+          "sampledImageColorSampleCounts": "0x0000000f",
+          "sampledImageIntegerSampleCounts": "0x0000000f",
+          "sampledImageDepthSampleCounts": "0x0000000f",
+          "sampledImageStencilSampleCounts": "0x0000000f",
+          "storageImageSampleCounts": "0x0000000f",
+          "maxSampleMaskWords": 1,
+          "timestampComputeAndGraphics": true,
+          "timestampPeriod": 10.0,
+          "maxClipDistances": 8,
+          "maxCullDistances": 8,
+          "maxCombinedClipAndCullDistances": 8,
+          "discreteQueuePriorities": 2,
+          "pointSizeRange": [
+            0.0,
+            8191.875
+          ],
+          "lineWidthRange": [
+            0.0,
+            8.0
+          ],
+          "pointSizeGranularity": 0.125,
+          "lineWidthGranularity": 0.125,
+          "strictLines": false,
+          "standardSampleLocations": true,
+          "optimalBufferCopyOffsetAlignment": 1,
+          "optimalBufferCopyRowPitchAlignment": 1,
+          "nonCoherentAtomSize": 64
+        },
+        "sparseProperties": {
+          "residencyStandard2DBlockShape": true,
+          "residencyStandard2DMultisampleBlockShape": false,
+          "residencyStandard3DBlockShape": true,
+          "residencyAlignedMipSize": false,
+          "residencyNonResidentStrict": true
+        }
+      }
+    }
+  }
+},
+{
+  "index": 15,
+  "function": {
+    "name": "vkGetPhysicalDeviceFeatures",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "pFeatures": {
+        "robustBufferAccess": true,
+        "fullDrawIndexUint32": true,
+        "imageCubeArray": true,
+        "independentBlend": true,
+        "geometryShader": true,
+        "tessellationShader": true,
+        "sampleRateShading": true,
+        "dualSrcBlend": true,
+        "logicOp": true,
+        "multiDrawIndirect": true,
+        "drawIndirectFirstInstance": true,
+        "depthClamp": true,
+        "depthBiasClamp": true,
+        "fillModeNonSolid": true,
+        "depthBounds": true,
+        "wideLines": true,
+        "largePoints": true,
+        "alphaToOne": true,
+        "multiViewport": true,
+        "samplerAnisotropy": true,
+        "textureCompressionETC2": false,
+        "textureCompressionASTC_LDR": false,
+        "textureCompressionBC": true,
+        "occlusionQueryPrecise": true,
+        "pipelineStatisticsQuery": true,
+        "vertexPipelineStoresAndAtomics": true,
+        "fragmentStoresAndAtomics": true,
+        "shaderTessellationAndGeometryPointSize": true,
+        "shaderImageGatherExtended": true,
+        "shaderStorageImageExtendedFormats": true,
+        "shaderStorageImageMultisample": true,
+        "shaderStorageImageReadWithoutFormat": true,
+        "shaderStorageImageWriteWithoutFormat": true,
+        "shaderUniformBufferArrayDynamicIndexing": true,
+        "shaderSampledImageArrayDynamicIndexing": true,
+        "shaderStorageBufferArrayDynamicIndexing": true,
+        "shaderStorageImageArrayDynamicIndexing": true,
+        "shaderClipDistance": true,
+        "shaderCullDistance": true,
+        "shaderFloat64": true,
+        "shaderInt64": true,
+        "shaderInt16": true,
+        "shaderResourceResidency": true,
+        "shaderResourceMinLod": true,
+        "sparseBinding": true,
+        "sparseResidencyBuffer": true,
+        "sparseResidencyImage2D": true,
+        "sparseResidencyImage3D": true,
+        "sparseResidency2Samples": false,
+        "sparseResidency4Samples": false,
+        "sparseResidency8Samples": false,
+        "sparseResidency16Samples": false,
+        "sparseResidencyAliased": true,
+        "variableMultisampleRate": true,
+        "inheritedQueries": true
+      }
+    }
+  }
+},
+{
+  "index": 16,
+  "function": {
+    "name": "vkGetPhysicalDeviceQueueFamilyProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "pQueueFamilyPropertyCount": 3,
+      "pQueueFamilyProperties": null
+    }
+  }
+},
+{
+  "index": 17,
+  "function": {
+    "name": "vkGetPhysicalDeviceQueueFamilyProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "pQueueFamilyPropertyCount": 3,
+      "pQueueFamilyProperties": [
+        {
+          "queueFlags": "0x00000007",
+          "queueCount": 1,
+          "timestampValidBits": 64,
+          "minImageTransferGranularity": {
+            "width": 1,
+            "height": 1,
+            "depth": 1
+          }
+        },
+        {
+          "queueFlags": "0x00000006",
+          "queueCount": 4,
+          "timestampValidBits": 64,
+          "minImageTransferGranularity": {
+            "width": 1,
+            "height": 1,
+            "depth": 1
+          }
+        },
+        {
+          "queueFlags": "0x00000008",
+          "queueCount": 1,
+          "timestampValidBits": 64,
+          "minImageTransferGranularity": {
+            "width": 1,
+            "height": 1,
+            "depth": 1
+          }
+        }
+      ]
+    }
+  }
+},
+{
+  "index": 18,
+  "function": {
+    "name": "vkGetPhysicalDeviceSurfaceSupportKHR",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "physicalDevice": 2,
+      "queueFamilyIndex": 0,
+      "surface": 4,
+      "pSupported": true
+    }
+  }
+},
+{
+  "index": 19,
+  "function": {
+    "name": "vkGetPhysicalDeviceSurfaceCapabilitiesKHR",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "physicalDevice": 2,
+      "surface": 4,
+      "pSurfaceCapabilities": {
+        "minImageCount": 4,
+        "maxImageCount": 0,
+        "currentExtent": {
+          "width": 4294967295,
+          "height": 4294967295
+        },
+        "minImageExtent": {
+          "width": 1,
+          "height": 1
+        },
+        "maxImageExtent": {
+          "width": 16384,
+          "height": 16384
+        },
+        "maxImageArrayLayers": 1,
+        "supportedTransforms": "0x00000001",
+        "currentTransform": "VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR",
+        "supportedCompositeAlpha": "0x00000003",
+        "supportedUsageFlags": "0x0008009f"
+      }
+    }
+  }
+},
+{
+  "index": 20,
+  "function": {
+    "name": "vkGetPhysicalDeviceSurfaceFormatsKHR",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "physicalDevice": 2,
+      "surface": 4,
+      "pSurfaceFormatCount": 9,
+      "pSurfaceFormats": null
+    }
+  }
+},
+{
+  "index": 21,
+  "function": {
+    "name": "vkGetPhysicalDeviceSurfaceFormatsKHR",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "physicalDevice": 2,
+      "surface": 4,
+      "pSurfaceFormatCount": 9,
+      "pSurfaceFormats": [
+        {
+          "format": "VK_FORMAT_A2B10G10R10_UNORM_PACK32",
+          "colorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"
+        },
+        {
+          "format": "VK_FORMAT_A2R10G10B10_UNORM_PACK32",
+          "colorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"
+        },
+        {
+          "format": "VK_FORMAT_R8G8B8A8_SRGB",
+          "colorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"
+        },
+        {
+          "format": "VK_FORMAT_R8G8B8A8_UNORM",
+          "colorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"
+        },
+        {
+          "format": "VK_FORMAT_B8G8R8A8_SRGB",
+          "colorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"
+        },
+        {
+          "format": "VK_FORMAT_B8G8R8A8_UNORM",
+          "colorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"
+        },
+        {
+          "format": "VK_FORMAT_R16G16B16A16_UNORM",
+          "colorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"
+        },
+        {
+          "format": "VK_FORMAT_R16G16B16A16_SFLOAT",
+          "colorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"
+        },
+        {
+          "format": "VK_FORMAT_R5G6B5_UNORM_PACK16",
+          "colorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"
+        }
+      ]
+    }
+  }
+},
+{
+  "index": 22,
+  "function": {
+    "name": "vkGetPhysicalDeviceSurfacePresentModesKHR",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "physicalDevice": 2,
+      "surface": 4,
+      "pPresentModeCount": 3,
+      "pPresentModes": null
+    }
+  }
+},
+{
+  "index": 23,
+  "function": {
+    "name": "vkGetPhysicalDeviceSurfacePresentModesKHR",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "physicalDevice": 2,
+      "surface": 4,
+      "pPresentModeCount": 3,
+      "pPresentModes": [
+        "VK_PRESENT_MODE_MAILBOX_KHR",
+        "VK_PRESENT_MODE_FIFO_KHR",
+        "VK_PRESENT_MODE_IMMEDIATE_KHR"
+      ]
+    }
+  }
+},
+{
+  "index": 24,
+  "function": {
+    "name": "vkGetPhysicalDeviceQueueFamilyProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "pQueueFamilyPropertyCount": 3,
+      "pQueueFamilyProperties": null
+    }
+  }
+},
+{
+  "index": 25,
+  "function": {
+    "name": "vkGetPhysicalDeviceQueueFamilyProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "pQueueFamilyPropertyCount": 3,
+      "pQueueFamilyProperties": [
+        {
+          "queueFlags": "0x00000007",
+          "queueCount": 1,
+          "timestampValidBits": 64,
+          "minImageTransferGranularity": {
+            "width": 1,
+            "height": 1,
+            "depth": 1
+          }
+        },
+        {
+          "queueFlags": "0x00000006",
+          "queueCount": 4,
+          "timestampValidBits": 64,
+          "minImageTransferGranularity": {
+            "width": 1,
+            "height": 1,
+            "depth": 1
+          }
+        },
+        {
+          "queueFlags": "0x00000008",
+          "queueCount": 1,
+          "timestampValidBits": 64,
+          "minImageTransferGranularity": {
+            "width": 1,
+            "height": 1,
+            "depth": 1
+          }
+        }
+      ]
+    }
+  }
+},
+{
+  "index": 26,
+  "function": {
+    "name": "vkGetPhysicalDeviceSurfaceSupportKHR",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "physicalDevice": 2,
+      "queueFamilyIndex": 0,
+      "surface": 4,
+      "pSupported": true
+    }
+  }
+},
+{
+  "index": 27,
+  "function": {
+    "name": "vkGetPhysicalDeviceProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "pProperties": {
+        "apiVersion": 4206870,
+        "driverVersion": 100667395,
+        "vendorID": 4098,
+        "deviceID": 29679,
+        "deviceType": "VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU",
+        "deviceName": "AMD Radeon RX 6650 XT (RADV NAVI23)",
+        "pipelineCacheUUID": "1e578365641e583fe1936ed83f7648a8",
+        "limits": {
+          "maxImageDimension1D": 16384,
+          "maxImageDimension2D": 16384,
+          "maxImageDimension3D": 2048,
+          "maxImageDimensionCube": 16384,
+          "maxImageArrayLayers": 2048,
+          "maxTexelBufferElements": 4294967295,
+          "maxUniformBufferRange": 4294967295,
+          "maxStorageBufferRange": 4294967295,
+          "maxPushConstantsSize": 256,
+          "maxMemoryAllocationCount": 4294967295,
+          "maxSamplerAllocationCount": 65536,
+          "bufferImageGranularity": 1,
+          "sparseAddressSpaceSize": 4294967292,
+          "maxBoundDescriptorSets": 32,
+          "maxPerStageDescriptorSamplers": 8388606,
+          "maxPerStageDescriptorUniformBuffers": 8388606,
+          "maxPerStageDescriptorStorageBuffers": 8388606,
+          "maxPerStageDescriptorSampledImages": 8388606,
+          "maxPerStageDescriptorStorageImages": 8388606,
+          "maxPerStageDescriptorInputAttachments": 8388606,
+          "maxPerStageResources": 8388606,
+          "maxDescriptorSetSamplers": 8388606,
+          "maxDescriptorSetUniformBuffers": 8388606,
+          "maxDescriptorSetUniformBuffersDynamic": 16,
+          "maxDescriptorSetStorageBuffers": 8388606,
+          "maxDescriptorSetStorageBuffersDynamic": 8,
+          "maxDescriptorSetSampledImages": 8388606,
+          "maxDescriptorSetStorageImages": 8388606,
+          "maxDescriptorSetInputAttachments": 8388606,
+          "maxVertexInputAttributes": 32,
+          "maxVertexInputBindings": 32,
+          "maxVertexInputAttributeOffset": 4294967295,
+          "maxVertexInputBindingStride": 2048,
+          "maxVertexOutputComponents": 128,
+          "maxTessellationGenerationLevel": 64,
+          "maxTessellationPatchSize": 32,
+          "maxTessellationControlPerVertexInputComponents": 128,
+          "maxTessellationControlPerVertexOutputComponents": 128,
+          "maxTessellationControlPerPatchOutputComponents": 120,
+          "maxTessellationControlTotalOutputComponents": 4096,
+          "maxTessellationEvaluationInputComponents": 128,
+          "maxTessellationEvaluationOutputComponents": 128,
+          "maxGeometryShaderInvocations": 127,
+          "maxGeometryInputComponents": 64,
+          "maxGeometryOutputComponents": 128,
+          "maxGeometryOutputVertices": 256,
+          "maxGeometryTotalOutputComponents": 1024,
+          "maxFragmentInputComponents": 128,
+          "maxFragmentOutputAttachments": 8,
+          "maxFragmentDualSrcAttachments": 1,
+          "maxFragmentCombinedOutputResources": 8388606,
+          "maxComputeSharedMemorySize": 65536,
+          "maxComputeWorkGroupCount": [
+            65535,
+            65535,
+            65535
+          ],
+          "maxComputeWorkGroupInvocations": 1024,
+          "maxComputeWorkGroupSize": [
+            1024,
+            1024,
+            1024
+          ],
+          "subPixelPrecisionBits": 8,
+          "subTexelPrecisionBits": 8,
+          "mipmapPrecisionBits": 8,
+          "maxDrawIndexedIndexValue": 4294967295,
+          "maxDrawIndirectCount": 4294967295,
+          "maxSamplerLodBias": 16.0,
+          "maxSamplerAnisotropy": 16.0,
+          "maxViewports": 16,
+          "maxViewportDimensions": [
+            16384,
+            16384
+          ],
+          "viewportBoundsRange": [
+            -32768.0,
+            32767.0
+          ],
+          "viewportSubPixelBits": 8,
+          "minMemoryMapAlignment": 4096,
+          "minTexelBufferOffsetAlignment": 4,
+          "minUniformBufferOffsetAlignment": 4,
+          "minStorageBufferOffsetAlignment": 4,
+          "minTexelOffset": -32,
+          "maxTexelOffset": 31,
+          "minTexelGatherOffset": -32,
+          "maxTexelGatherOffset": 31,
+          "minInterpolationOffset": -2.0,
+          "maxInterpolationOffset": 2.0,
+          "subPixelInterpolationOffsetBits": 8,
+          "maxFramebufferWidth": 16384,
+          "maxFramebufferHeight": 16384,
+          "maxFramebufferLayers": 1024,
+          "framebufferColorSampleCounts": "0x0000000f",
+          "framebufferDepthSampleCounts": "0x0000000f",
+          "framebufferStencilSampleCounts": "0x0000000f",
+          "framebufferNoAttachmentsSampleCounts": "0x0000000f",
+          "maxColorAttachments": 8,
+          "sampledImageColorSampleCounts": "0x0000000f",
+          "sampledImageIntegerSampleCounts": "0x0000000f",
+          "sampledImageDepthSampleCounts": "0x0000000f",
+          "sampledImageStencilSampleCounts": "0x0000000f",
+          "storageImageSampleCounts": "0x0000000f",
+          "maxSampleMaskWords": 1,
+          "timestampComputeAndGraphics": true,
+          "timestampPeriod": 10.0,
+          "maxClipDistances": 8,
+          "maxCullDistances": 8,
+          "maxCombinedClipAndCullDistances": 8,
+          "discreteQueuePriorities": 2,
+          "pointSizeRange": [
+            0.0,
+            8191.875
+          ],
+          "lineWidthRange": [
+            0.0,
+            8.0
+          ],
+          "pointSizeGranularity": 0.125,
+          "lineWidthGranularity": 0.125,
+          "strictLines": false,
+          "standardSampleLocations": true,
+          "optimalBufferCopyOffsetAlignment": 1,
+          "optimalBufferCopyRowPitchAlignment": 1,
+          "nonCoherentAtomSize": 64
+        },
+        "sparseProperties": {
+          "residencyStandard2DBlockShape": true,
+          "residencyStandard2DMultisampleBlockShape": false,
+          "residencyStandard3DBlockShape": true,
+          "residencyAlignedMipSize": false,
+          "residencyNonResidentStrict": true
+        }
+      }
+    }
+  }
+},
+{
+  "index": 28,
+  "function": {
+    "name": "vkCreateDevice",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "physicalDevice": 2,
+      "pCreateInfo": {
+        "sType": "VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO",
+        "flags": "0x00000000",
+        "queueCreateInfoCount": 1,
+        "pQueueCreateInfos": [
+          {
+            "sType": "VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO",
+            "flags": "0x00000000",
+            "queueFamilyIndex": 0,
+            "queueCount": 1,
+            "pQueuePriorities": [
+              1.0
+            ],
+            "pNext": null
+          }
+        ],
+        "enabledLayerCount": 2,
+        "ppEnabledLayerNames": [
+          "VK_LAYER_KHRONOS_validation",
+          "VK_LAYER_LUNARG_gfxreconstruct"
+        ],
+        "enabledExtensionCount": 1,
+        "ppEnabledExtensionNames": [
+          "VK_KHR_swapchain"
+        ],
+        "pEnabledFeatures": {
+          "robustBufferAccess": false,
+          "fullDrawIndexUint32": false,
+          "imageCubeArray": false,
+          "independentBlend": false,
+          "geometryShader": false,
+          "tessellationShader": false,
+          "sampleRateShading": false,
+          "dualSrcBlend": false,
+          "logicOp": false,
+          "multiDrawIndirect": false,
+          "drawIndirectFirstInstance": false,
+          "depthClamp": false,
+          "depthBiasClamp": false,
+          "fillModeNonSolid": false,
+          "depthBounds": false,
+          "wideLines": false,
+          "largePoints": false,
+          "alphaToOne": false,
+          "multiViewport": false,
+          "samplerAnisotropy": false,
+          "textureCompressionETC2": false,
+          "textureCompressionASTC_LDR": false,
+          "textureCompressionBC": false,
+          "occlusionQueryPrecise": false,
+          "pipelineStatisticsQuery": false,
+          "vertexPipelineStoresAndAtomics": false,
+          "fragmentStoresAndAtomics": false,
+          "shaderTessellationAndGeometryPointSize": false,
+          "shaderImageGatherExtended": false,
+          "shaderStorageImageExtendedFormats": false,
+          "shaderStorageImageMultisample": false,
+          "shaderStorageImageReadWithoutFormat": false,
+          "shaderStorageImageWriteWithoutFormat": false,
+          "shaderUniformBufferArrayDynamicIndexing": false,
+          "shaderSampledImageArrayDynamicIndexing": false,
+          "shaderStorageBufferArrayDynamicIndexing": false,
+          "shaderStorageImageArrayDynamicIndexing": false,
+          "shaderClipDistance": false,
+          "shaderCullDistance": false,
+          "shaderFloat64": false,
+          "shaderInt64": false,
+          "shaderInt16": false,
+          "shaderResourceResidency": false,
+          "shaderResourceMinLod": false,
+          "sparseBinding": false,
+          "sparseResidencyBuffer": false,
+          "sparseResidencyImage2D": false,
+          "sparseResidencyImage3D": false,
+          "sparseResidency2Samples": false,
+          "sparseResidency4Samples": false,
+          "sparseResidency8Samples": false,
+          "sparseResidency16Samples": false,
+          "sparseResidencyAliased": false,
+          "variableMultisampleRate": false,
+          "inheritedQueries": false
+        },
+        "pNext": null
+      },
+      "pAllocator": null,
+      "pDevice": 5
+    }
+  }
+},
+{
+  "index": 29,
+  "function": {
+    "name": "vkGetPhysicalDeviceProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "pProperties": {
+        "apiVersion": 4206870,
+        "driverVersion": 100667395,
+        "vendorID": 4098,
+        "deviceID": 29679,
+        "deviceType": "VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU",
+        "deviceName": "AMD Radeon RX 6650 XT (RADV NAVI23)",
+        "pipelineCacheUUID": "1e578365641e583fe1936ed83f7648a8",
+        "limits": {
+          "maxImageDimension1D": 16384,
+          "maxImageDimension2D": 16384,
+          "maxImageDimension3D": 2048,
+          "maxImageDimensionCube": 16384,
+          "maxImageArrayLayers": 2048,
+          "maxTexelBufferElements": 4294967295,
+          "maxUniformBufferRange": 4294967295,
+          "maxStorageBufferRange": 4294967295,
+          "maxPushConstantsSize": 256,
+          "maxMemoryAllocationCount": 4294967295,
+          "maxSamplerAllocationCount": 65536,
+          "bufferImageGranularity": 1,
+          "sparseAddressSpaceSize": 4294967292,
+          "maxBoundDescriptorSets": 32,
+          "maxPerStageDescriptorSamplers": 8388606,
+          "maxPerStageDescriptorUniformBuffers": 8388606,
+          "maxPerStageDescriptorStorageBuffers": 8388606,
+          "maxPerStageDescriptorSampledImages": 8388606,
+          "maxPerStageDescriptorStorageImages": 8388606,
+          "maxPerStageDescriptorInputAttachments": 8388606,
+          "maxPerStageResources": 8388606,
+          "maxDescriptorSetSamplers": 8388606,
+          "maxDescriptorSetUniformBuffers": 8388606,
+          "maxDescriptorSetUniformBuffersDynamic": 16,
+          "maxDescriptorSetStorageBuffers": 8388606,
+          "maxDescriptorSetStorageBuffersDynamic": 8,
+          "maxDescriptorSetSampledImages": 8388606,
+          "maxDescriptorSetStorageImages": 8388606,
+          "maxDescriptorSetInputAttachments": 8388606,
+          "maxVertexInputAttributes": 32,
+          "maxVertexInputBindings": 32,
+          "maxVertexInputAttributeOffset": 4294967295,
+          "maxVertexInputBindingStride": 2048,
+          "maxVertexOutputComponents": 128,
+          "maxTessellationGenerationLevel": 64,
+          "maxTessellationPatchSize": 32,
+          "maxTessellationControlPerVertexInputComponents": 128,
+          "maxTessellationControlPerVertexOutputComponents": 128,
+          "maxTessellationControlPerPatchOutputComponents": 120,
+          "maxTessellationControlTotalOutputComponents": 4096,
+          "maxTessellationEvaluationInputComponents": 128,
+          "maxTessellationEvaluationOutputComponents": 128,
+          "maxGeometryShaderInvocations": 127,
+          "maxGeometryInputComponents": 64,
+          "maxGeometryOutputComponents": 128,
+          "maxGeometryOutputVertices": 256,
+          "maxGeometryTotalOutputComponents": 1024,
+          "maxFragmentInputComponents": 128,
+          "maxFragmentOutputAttachments": 8,
+          "maxFragmentDualSrcAttachments": 1,
+          "maxFragmentCombinedOutputResources": 8388606,
+          "maxComputeSharedMemorySize": 65536,
+          "maxComputeWorkGroupCount": [
+            65535,
+            65535,
+            65535
+          ],
+          "maxComputeWorkGroupInvocations": 1024,
+          "maxComputeWorkGroupSize": [
+            1024,
+            1024,
+            1024
+          ],
+          "subPixelPrecisionBits": 8,
+          "subTexelPrecisionBits": 8,
+          "mipmapPrecisionBits": 8,
+          "maxDrawIndexedIndexValue": 4294967295,
+          "maxDrawIndirectCount": 4294967295,
+          "maxSamplerLodBias": 16.0,
+          "maxSamplerAnisotropy": 16.0,
+          "maxViewports": 16,
+          "maxViewportDimensions": [
+            16384,
+            16384
+          ],
+          "viewportBoundsRange": [
+            -32768.0,
+            32767.0
+          ],
+          "viewportSubPixelBits": 8,
+          "minMemoryMapAlignment": 4096,
+          "minTexelBufferOffsetAlignment": 4,
+          "minUniformBufferOffsetAlignment": 4,
+          "minStorageBufferOffsetAlignment": 4,
+          "minTexelOffset": -32,
+          "maxTexelOffset": 31,
+          "minTexelGatherOffset": -32,
+          "maxTexelGatherOffset": 31,
+          "minInterpolationOffset": -2.0,
+          "maxInterpolationOffset": 2.0,
+          "subPixelInterpolationOffsetBits": 8,
+          "maxFramebufferWidth": 16384,
+          "maxFramebufferHeight": 16384,
+          "maxFramebufferLayers": 1024,
+          "framebufferColorSampleCounts": "0x0000000f",
+          "framebufferDepthSampleCounts": "0x0000000f",
+          "framebufferStencilSampleCounts": "0x0000000f",
+          "framebufferNoAttachmentsSampleCounts": "0x0000000f",
+          "maxColorAttachments": 8,
+          "sampledImageColorSampleCounts": "0x0000000f",
+          "sampledImageIntegerSampleCounts": "0x0000000f",
+          "sampledImageDepthSampleCounts": "0x0000000f",
+          "sampledImageStencilSampleCounts": "0x0000000f",
+          "storageImageSampleCounts": "0x0000000f",
+          "maxSampleMaskWords": 1,
+          "timestampComputeAndGraphics": true,
+          "timestampPeriod": 10.0,
+          "maxClipDistances": 8,
+          "maxCullDistances": 8,
+          "maxCombinedClipAndCullDistances": 8,
+          "discreteQueuePriorities": 2,
+          "pointSizeRange": [
+            0.0,
+            8191.875
+          ],
+          "lineWidthRange": [
+            0.0,
+            8.0
+          ],
+          "pointSizeGranularity": 0.125,
+          "lineWidthGranularity": 0.125,
+          "strictLines": false,
+          "standardSampleLocations": true,
+          "optimalBufferCopyOffsetAlignment": 1,
+          "optimalBufferCopyRowPitchAlignment": 1,
+          "nonCoherentAtomSize": 64
+        },
+        "sparseProperties": {
+          "residencyStandard2DBlockShape": true,
+          "residencyStandard2DMultisampleBlockShape": false,
+          "residencyStandard3DBlockShape": true,
+          "residencyAlignedMipSize": false,
+          "residencyNonResidentStrict": true
+        }
+      }
+    }
+  }
+},
+{
+  "index": 30,
+  "function": {
+    "name": "vkGetPhysicalDeviceMemoryProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "pMemoryProperties": {
+        "memoryTypeCount": 11,
+        "memoryTypes": [
+          {
+            "propertyFlags": "0x00000001",
+            "heapIndex": 0
+          },
+          {
+            "propertyFlags": "0x00000001",
+            "heapIndex": 0
+          },
+          {
+            "propertyFlags": "0x00000006",
+            "heapIndex": 1
+          },
+          {
+            "propertyFlags": "0x00000007",
+            "heapIndex": 2
+          },
+          {
+            "propertyFlags": "0x00000007",
+            "heapIndex": 2
+          },
+          {
+            "propertyFlags": "0x0000000e",
+            "heapIndex": 1
+          },
+          {
+            "propertyFlags": "0x0000000e",
+            "heapIndex": 1
+          },
+          {
+            "propertyFlags": "0x000000c1",
+            "heapIndex": 0
+          },
+          {
+            "propertyFlags": "0x000000c6",
+            "heapIndex": 1
+          },
+          {
+            "propertyFlags": "0x000000c7",
+            "heapIndex": 2
+          },
+          {
+            "propertyFlags": "0x000000ce",
+            "heapIndex": 1
+          }
+        ],
+        "memoryHeapCount": 3,
+        "memoryHeaps": [
+          {
+            "size": 8321499136,
+            "flags": "0x00000001"
+          },
+          {
+            "size": 16778567680,
+            "flags": "0x00000000"
+          },
+          {
+            "size": 268435456,
+            "flags": "0x00000001"
+          }
+        ]
+      }
+    }
+  }
+},
+{
+  "index": 31,
+  "function": {
+    "name": "vkGetPhysicalDeviceProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "pProperties": {
+        "apiVersion": 4206870,
+        "driverVersion": 100667395,
+        "vendorID": 4098,
+        "deviceID": 29679,
+        "deviceType": "VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU",
+        "deviceName": "AMD Radeon RX 6650 XT (RADV NAVI23)",
+        "pipelineCacheUUID": "1e578365641e583fe1936ed83f7648a8",
+        "limits": {
+          "maxImageDimension1D": 16384,
+          "maxImageDimension2D": 16384,
+          "maxImageDimension3D": 2048,
+          "maxImageDimensionCube": 16384,
+          "maxImageArrayLayers": 2048,
+          "maxTexelBufferElements": 4294967295,
+          "maxUniformBufferRange": 4294967295,
+          "maxStorageBufferRange": 4294967295,
+          "maxPushConstantsSize": 256,
+          "maxMemoryAllocationCount": 4294967295,
+          "maxSamplerAllocationCount": 65536,
+          "bufferImageGranularity": 1,
+          "sparseAddressSpaceSize": 4294967292,
+          "maxBoundDescriptorSets": 32,
+          "maxPerStageDescriptorSamplers": 8388606,
+          "maxPerStageDescriptorUniformBuffers": 8388606,
+          "maxPerStageDescriptorStorageBuffers": 8388606,
+          "maxPerStageDescriptorSampledImages": 8388606,
+          "maxPerStageDescriptorStorageImages": 8388606,
+          "maxPerStageDescriptorInputAttachments": 8388606,
+          "maxPerStageResources": 8388606,
+          "maxDescriptorSetSamplers": 8388606,
+          "maxDescriptorSetUniformBuffers": 8388606,
+          "maxDescriptorSetUniformBuffersDynamic": 16,
+          "maxDescriptorSetStorageBuffers": 8388606,
+          "maxDescriptorSetStorageBuffersDynamic": 8,
+          "maxDescriptorSetSampledImages": 8388606,
+          "maxDescriptorSetStorageImages": 8388606,
+          "maxDescriptorSetInputAttachments": 8388606,
+          "maxVertexInputAttributes": 32,
+          "maxVertexInputBindings": 32,
+          "maxVertexInputAttributeOffset": 4294967295,
+          "maxVertexInputBindingStride": 2048,
+          "maxVertexOutputComponents": 128,
+          "maxTessellationGenerationLevel": 64,
+          "maxTessellationPatchSize": 32,
+          "maxTessellationControlPerVertexInputComponents": 128,
+          "maxTessellationControlPerVertexOutputComponents": 128,
+          "maxTessellationControlPerPatchOutputComponents": 120,
+          "maxTessellationControlTotalOutputComponents": 4096,
+          "maxTessellationEvaluationInputComponents": 128,
+          "maxTessellationEvaluationOutputComponents": 128,
+          "maxGeometryShaderInvocations": 127,
+          "maxGeometryInputComponents": 64,
+          "maxGeometryOutputComponents": 128,
+          "maxGeometryOutputVertices": 256,
+          "maxGeometryTotalOutputComponents": 1024,
+          "maxFragmentInputComponents": 128,
+          "maxFragmentOutputAttachments": 8,
+          "maxFragmentDualSrcAttachments": 1,
+          "maxFragmentCombinedOutputResources": 8388606,
+          "maxComputeSharedMemorySize": 65536,
+          "maxComputeWorkGroupCount": [
+            65535,
+            65535,
+            65535
+          ],
+          "maxComputeWorkGroupInvocations": 1024,
+          "maxComputeWorkGroupSize": [
+            1024,
+            1024,
+            1024
+          ],
+          "subPixelPrecisionBits": 8,
+          "subTexelPrecisionBits": 8,
+          "mipmapPrecisionBits": 8,
+          "maxDrawIndexedIndexValue": 4294967295,
+          "maxDrawIndirectCount": 4294967295,
+          "maxSamplerLodBias": 16.0,
+          "maxSamplerAnisotropy": 16.0,
+          "maxViewports": 16,
+          "maxViewportDimensions": [
+            16384,
+            16384
+          ],
+          "viewportBoundsRange": [
+            -32768.0,
+            32767.0
+          ],
+          "viewportSubPixelBits": 8,
+          "minMemoryMapAlignment": 4096,
+          "minTexelBufferOffsetAlignment": 4,
+          "minUniformBufferOffsetAlignment": 4,
+          "minStorageBufferOffsetAlignment": 4,
+          "minTexelOffset": -32,
+          "maxTexelOffset": 31,
+          "minTexelGatherOffset": -32,
+          "maxTexelGatherOffset": 31,
+          "minInterpolationOffset": -2.0,
+          "maxInterpolationOffset": 2.0,
+          "subPixelInterpolationOffsetBits": 8,
+          "maxFramebufferWidth": 16384,
+          "maxFramebufferHeight": 16384,
+          "maxFramebufferLayers": 1024,
+          "framebufferColorSampleCounts": "0x0000000f",
+          "framebufferDepthSampleCounts": "0x0000000f",
+          "framebufferStencilSampleCounts": "0x0000000f",
+          "framebufferNoAttachmentsSampleCounts": "0x0000000f",
+          "maxColorAttachments": 8,
+          "sampledImageColorSampleCounts": "0x0000000f",
+          "sampledImageIntegerSampleCounts": "0x0000000f",
+          "sampledImageDepthSampleCounts": "0x0000000f",
+          "sampledImageStencilSampleCounts": "0x0000000f",
+          "storageImageSampleCounts": "0x0000000f",
+          "maxSampleMaskWords": 1,
+          "timestampComputeAndGraphics": true,
+          "timestampPeriod": 10.0,
+          "maxClipDistances": 8,
+          "maxCullDistances": 8,
+          "maxCombinedClipAndCullDistances": 8,
+          "discreteQueuePriorities": 2,
+          "pointSizeRange": [
+            0.0,
+            8191.875
+          ],
+          "lineWidthRange": [
+            0.0,
+            8.0
+          ],
+          "pointSizeGranularity": 0.125,
+          "lineWidthGranularity": 0.125,
+          "strictLines": false,
+          "standardSampleLocations": true,
+          "optimalBufferCopyOffsetAlignment": 1,
+          "optimalBufferCopyRowPitchAlignment": 1,
+          "nonCoherentAtomSize": 64
+        },
+        "sparseProperties": {
+          "residencyStandard2DBlockShape": true,
+          "residencyStandard2DMultisampleBlockShape": false,
+          "residencyStandard3DBlockShape": true,
+          "residencyAlignedMipSize": false,
+          "residencyNonResidentStrict": true
+        }
+      }
+    }
+  }
+},
+{
+  "index": 32,
+  "function": {
+    "name": "vkGetPhysicalDeviceQueueFamilyProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "pQueueFamilyPropertyCount": 3,
+      "pQueueFamilyProperties": null
+    }
+  }
+},
+{
+  "index": 33,
+  "function": {
+    "name": "vkGetPhysicalDeviceQueueFamilyProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "pQueueFamilyPropertyCount": 3,
+      "pQueueFamilyProperties": [
+        {
+          "queueFlags": "0x00000007",
+          "queueCount": 1,
+          "timestampValidBits": 64,
+          "minImageTransferGranularity": {
+            "width": 1,
+            "height": 1,
+            "depth": 1
+          }
+        },
+        {
+          "queueFlags": "0x00000006",
+          "queueCount": 4,
+          "timestampValidBits": 64,
+          "minImageTransferGranularity": {
+            "width": 1,
+            "height": 1,
+            "depth": 1
+          }
+        },
+        {
+          "queueFlags": "0x00000008",
+          "queueCount": 1,
+          "timestampValidBits": 64,
+          "minImageTransferGranularity": {
+            "width": 1,
+            "height": 1,
+            "depth": 1
+          }
+        }
+      ]
+    }
+  }
+},
+{
+  "index": 34,
+  "function": {
+    "name": "vkGetDeviceQueue",
+    "thread": 1,
+    "args": {
+      "device": 5,
+      "queueFamilyIndex": 0,
+      "queueIndex": 0,
+      "pQueue": 6
+    }
+  }
+},
+{
+  "index": 35,
+  "function": {
+    "name": "vkGetDeviceQueue",
+    "thread": 1,
+    "args": {
+      "device": 5,
+      "queueFamilyIndex": 0,
+      "queueIndex": 0,
+      "pQueue": 6
+    }
+  }
+},
+{
+  "index": 36,
+  "function": {
+    "name": "vkGetDeviceQueue",
+    "thread": 1,
+    "args": {
+      "device": 5,
+      "queueFamilyIndex": 0,
+      "queueIndex": 0,
+      "pQueue": 6
+    }
+  }
+},
+{
+  "index": 37,
+  "function": {
+    "name": "vkGetPhysicalDeviceSurfaceCapabilitiesKHR",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "physicalDevice": 2,
+      "surface": 4,
+      "pSurfaceCapabilities": {
+        "minImageCount": 4,
+        "maxImageCount": 0,
+        "currentExtent": {
+          "width": 4294967295,
+          "height": 4294967295
+        },
+        "minImageExtent": {
+          "width": 1,
+          "height": 1
+        },
+        "maxImageExtent": {
+          "width": 16384,
+          "height": 16384
+        },
+        "maxImageArrayLayers": 1,
+        "supportedTransforms": "0x00000001",
+        "currentTransform": "VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR",
+        "supportedCompositeAlpha": "0x00000003",
+        "supportedUsageFlags": "0x0008009f"
+      }
+    }
+  }
+},
+{
+  "index": 38,
+  "function": {
+    "name": "vkGetPhysicalDeviceSurfaceFormatsKHR",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "physicalDevice": 2,
+      "surface": 4,
+      "pSurfaceFormatCount": 9,
+      "pSurfaceFormats": null
+    }
+  }
+},
+{
+  "index": 39,
+  "function": {
+    "name": "vkGetPhysicalDeviceSurfaceFormatsKHR",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "physicalDevice": 2,
+      "surface": 4,
+      "pSurfaceFormatCount": 9,
+      "pSurfaceFormats": [
+        {
+          "format": "VK_FORMAT_A2B10G10R10_UNORM_PACK32",
+          "colorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"
+        },
+        {
+          "format": "VK_FORMAT_A2R10G10B10_UNORM_PACK32",
+          "colorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"
+        },
+        {
+          "format": "VK_FORMAT_R8G8B8A8_SRGB",
+          "colorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"
+        },
+        {
+          "format": "VK_FORMAT_R8G8B8A8_UNORM",
+          "colorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"
+        },
+        {
+          "format": "VK_FORMAT_B8G8R8A8_SRGB",
+          "colorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"
+        },
+        {
+          "format": "VK_FORMAT_B8G8R8A8_UNORM",
+          "colorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"
+        },
+        {
+          "format": "VK_FORMAT_R16G16B16A16_UNORM",
+          "colorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"
+        },
+        {
+          "format": "VK_FORMAT_R16G16B16A16_SFLOAT",
+          "colorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"
+        },
+        {
+          "format": "VK_FORMAT_R5G6B5_UNORM_PACK16",
+          "colorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"
+        }
+      ]
+    }
+  }
+},
+{
+  "index": 40,
+  "function": {
+    "name": "vkGetPhysicalDeviceSurfacePresentModesKHR",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "physicalDevice": 2,
+      "surface": 4,
+      "pPresentModeCount": 3,
+      "pPresentModes": null
+    }
+  }
+},
+{
+  "index": 41,
+  "function": {
+    "name": "vkGetPhysicalDeviceSurfacePresentModesKHR",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "physicalDevice": 2,
+      "surface": 4,
+      "pPresentModeCount": 3,
+      "pPresentModes": [
+        "VK_PRESENT_MODE_MAILBOX_KHR",
+        "VK_PRESENT_MODE_FIFO_KHR",
+        "VK_PRESENT_MODE_IMMEDIATE_KHR"
+      ]
+    }
+  }
+},
+{
+  "index": 42,
+  "function": {
+    "name": "vkGetPhysicalDeviceQueueFamilyProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "pQueueFamilyPropertyCount": 3,
+      "pQueueFamilyProperties": null
+    }
+  }
+},
+{
+  "index": 43,
+  "function": {
+    "name": "vkGetPhysicalDeviceQueueFamilyProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "pQueueFamilyPropertyCount": 3,
+      "pQueueFamilyProperties": [
+        {
+          "queueFlags": "0x00000007",
+          "queueCount": 1,
+          "timestampValidBits": 64,
+          "minImageTransferGranularity": {
+            "width": 1,
+            "height": 1,
+            "depth": 1
+          }
+        },
+        {
+          "queueFlags": "0x00000006",
+          "queueCount": 4,
+          "timestampValidBits": 64,
+          "minImageTransferGranularity": {
+            "width": 1,
+            "height": 1,
+            "depth": 1
+          }
+        },
+        {
+          "queueFlags": "0x00000008",
+          "queueCount": 1,
+          "timestampValidBits": 64,
+          "minImageTransferGranularity": {
+            "width": 1,
+            "height": 1,
+            "depth": 1
+          }
+        }
+      ]
+    }
+  }
+},
+{
+  "index": 44,
+  "function": {
+    "name": "vkGetPhysicalDeviceSurfaceSupportKHR",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "physicalDevice": 2,
+      "queueFamilyIndex": 0,
+      "surface": 4,
+      "pSupported": true
+    }
+  }
+},
+{
+  "index": 45,
+  "function": {
+    "name": "vkGetPhysicalDeviceSurfaceFormatsKHR",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "physicalDevice": 2,
+      "surface": 4,
+      "pSurfaceFormatCount": 9,
+      "pSurfaceFormats": null
+    }
+  }
+},
+{
+  "index": 46,
+  "function": {
+    "name": "vkGetPhysicalDeviceSurfaceFormatsKHR",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "physicalDevice": 2,
+      "surface": 4,
+      "pSurfaceFormatCount": 9,
+      "pSurfaceFormats": [
+        {
+          "format": "VK_FORMAT_A2B10G10R10_UNORM_PACK32",
+          "colorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"
+        },
+        {
+          "format": "VK_FORMAT_A2R10G10B10_UNORM_PACK32",
+          "colorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"
+        },
+        {
+          "format": "VK_FORMAT_R8G8B8A8_SRGB",
+          "colorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"
+        },
+        {
+          "format": "VK_FORMAT_R8G8B8A8_UNORM",
+          "colorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"
+        },
+        {
+          "format": "VK_FORMAT_B8G8R8A8_SRGB",
+          "colorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"
+        },
+        {
+          "format": "VK_FORMAT_B8G8R8A8_UNORM",
+          "colorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"
+        },
+        {
+          "format": "VK_FORMAT_R16G16B16A16_UNORM",
+          "colorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"
+        },
+        {
+          "format": "VK_FORMAT_R16G16B16A16_SFLOAT",
+          "colorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"
+        },
+        {
+          "format": "VK_FORMAT_R5G6B5_UNORM_PACK16",
+          "colorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR"
+        }
+      ]
+    }
+  }
+},
+{
+  "index": 47,
+  "function": {
+    "name": "vkGetPhysicalDeviceFormatProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "format": "VK_FORMAT_B8G8R8A8_SRGB",
+      "pFormatProperties": {
+        "linearTilingFeatures": "0x0001dd81",
+        "optimalTilingFeatures": "0x0001dd81",
+        "bufferFeatures": "0x00000010"
+      }
+    }
+  }
+},
+{
+  "index": 48,
+  "function": {
+    "name": "vkGetPhysicalDeviceImageFormatProperties",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "physicalDevice": 2,
+      "format": "VK_FORMAT_B8G8R8A8_SRGB",
+      "type": "VK_IMAGE_TYPE_2D",
+      "tiling": "VK_IMAGE_TILING_OPTIMAL",
+      "usage": "0x00000010",
+      "flags": "0x00000000",
+      "pImageFormatProperties": {
+        "maxExtent": {
+          "width": 16384,
+          "height": 16384,
+          "depth": 1
+        },
+        "maxMipLevels": 15,
+        "maxArrayLayers": 8192,
+        "sampleCounts": "0x0000000f",
+        "maxResourceSize": 4294967295
+      }
+    }
+  }
+},
+{
+  "index": 49,
+  "meta": {
+    "name": "ResizeWindowCommand2",
+    "args": {
+      "surface_id": 4,
+      "width": 800,
+      "height": 600,
+      "pre_transform": 0
+    }
+  }
+},
+{
+  "index": 50,
+  "function": {
+    "name": "vkCreateSwapchainKHR",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "device": 5,
+      "pCreateInfo": {
+        "sType": "VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR",
+        "flags": "0x00000000",
+        "surface": 4,
+        "minImageCount": 5,
+        "imageFormat": "VK_FORMAT_B8G8R8A8_SRGB",
+        "imageColorSpace": "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR",
+        "imageExtent": {
+          "width": 800,
+          "height": 600
+        },
+        "imageArrayLayers": 1,
+        "imageUsage": "0x00000010",
+        "imageSharingMode": "VK_SHARING_MODE_EXCLUSIVE",
+        "queueFamilyIndexCount": 0,
+        "pQueueFamilyIndices": null,
+        "preTransform": "VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR",
+        "compositeAlpha": "VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR",
+        "presentMode": "VK_PRESENT_MODE_MAILBOX_KHR",
+        "clipped": true,
+        "oldSwapchain": 0,
+        "pNext": null
+      },
+      "pAllocator": null,
+      "pSwapchain": 7
+    }
+  }
+},
+{
+  "index": 51,
+  "function": {
+    "name": "vkGetSwapchainImagesKHR",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "device": 5,
+      "swapchain": 7,
+      "pSwapchainImageCount": 5,
+      "pSwapchainImages": null
+    }
+  }
+},
+{
+  "index": 52,
+  "function": {
+    "name": "vkGetSwapchainImagesKHR",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "device": 5,
+      "swapchain": 7,
+      "pSwapchainImageCount": 5,
+      "pSwapchainImages": [
+        8,
+        9,
+        10,
+        11,
+        12
+      ]
+    }
+  }
+},
+{
+  "index": 53,
+  "function": {
+    "name": "vkGetPhysicalDeviceFormatProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "format": "VK_FORMAT_B8G8R8A8_SRGB",
+      "pFormatProperties": {
+        "linearTilingFeatures": "0x0001dd81",
+        "optimalTilingFeatures": "0x0001dd81",
+        "bufferFeatures": "0x00000010"
+      }
+    }
+  }
+},
+{
+  "index": 54,
+  "function": {
+    "name": "vkGetPhysicalDeviceFormatProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "format": "VK_FORMAT_B8G8R8A8_SRGB",
+      "pFormatProperties": {
+        "linearTilingFeatures": "0x0001dd81",
+        "optimalTilingFeatures": "0x0001dd81",
+        "bufferFeatures": "0x00000010"
+      }
+    }
+  }
+},
+{
+  "index": 55,
+  "function": {
+    "name": "vkGetPhysicalDeviceFormatProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "format": "VK_FORMAT_B8G8R8A8_SRGB",
+      "pFormatProperties": {
+        "linearTilingFeatures": "0x0001dd81",
+        "optimalTilingFeatures": "0x0001dd81",
+        "bufferFeatures": "0x00000010"
+      }
+    }
+  }
+},
+{
+  "index": 56,
+  "function": {
+    "name": "vkGetPhysicalDeviceFormatProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "format": "VK_FORMAT_B8G8R8A8_SRGB",
+      "pFormatProperties": {
+        "linearTilingFeatures": "0x0001dd81",
+        "optimalTilingFeatures": "0x0001dd81",
+        "bufferFeatures": "0x00000010"
+      }
+    }
+  }
+},
+{
+  "index": 57,
+  "function": {
+    "name": "vkGetPhysicalDeviceFormatProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "format": "VK_FORMAT_B8G8R8A8_SRGB",
+      "pFormatProperties": {
+        "linearTilingFeatures": "0x0001dd81",
+        "optimalTilingFeatures": "0x0001dd81",
+        "bufferFeatures": "0x00000010"
+      }
+    }
+  }
+},
+{
+  "index": 58,
+  "function": {
+    "name": "vkGetPhysicalDeviceFormatProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "format": "VK_FORMAT_B8G8R8A8_SRGB",
+      "pFormatProperties": {
+        "linearTilingFeatures": "0x0001dd81",
+        "optimalTilingFeatures": "0x0001dd81",
+        "bufferFeatures": "0x00000010"
+      }
+    }
+  }
+},
+{
+  "index": 59,
+  "function": {
+    "name": "vkCreateImageView",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "device": 5,
+      "pCreateInfo": {
+        "sType": "VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO",
+        "flags": "0x00000000",
+        "image": 8,
+        "viewType": "VK_IMAGE_VIEW_TYPE_2D",
+        "format": "VK_FORMAT_B8G8R8A8_SRGB",
+        "components": {
+          "r": "VK_COMPONENT_SWIZZLE_IDENTITY",
+          "g": "VK_COMPONENT_SWIZZLE_IDENTITY",
+          "b": "VK_COMPONENT_SWIZZLE_IDENTITY",
+          "a": "VK_COMPONENT_SWIZZLE_IDENTITY"
+        },
+        "subresourceRange": {
+          "aspectMask": "0x00000001",
+          "baseMipLevel": 0,
+          "levelCount": 1,
+          "baseArrayLayer": 0,
+          "layerCount": 1
+        },
+        "pNext": null
+      },
+      "pAllocator": null,
+      "pView": 13
+    }
+  }
+},
+{
+  "index": 60,
+  "function": {
+    "name": "vkGetPhysicalDeviceFormatProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "format": "VK_FORMAT_B8G8R8A8_SRGB",
+      "pFormatProperties": {
+        "linearTilingFeatures": "0x0001dd81",
+        "optimalTilingFeatures": "0x0001dd81",
+        "bufferFeatures": "0x00000010"
+      }
+    }
+  }
+},
+{
+  "index": 61,
+  "function": {
+    "name": "vkGetPhysicalDeviceFormatProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "format": "VK_FORMAT_B8G8R8A8_SRGB",
+      "pFormatProperties": {
+        "linearTilingFeatures": "0x0001dd81",
+        "optimalTilingFeatures": "0x0001dd81",
+        "bufferFeatures": "0x00000010"
+      }
+    }
+  }
+},
+{
+  "index": 62,
+  "function": {
+    "name": "vkCreateImageView",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "device": 5,
+      "pCreateInfo": {
+        "sType": "VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO",
+        "flags": "0x00000000",
+        "image": 9,
+        "viewType": "VK_IMAGE_VIEW_TYPE_2D",
+        "format": "VK_FORMAT_B8G8R8A8_SRGB",
+        "components": {
+          "r": "VK_COMPONENT_SWIZZLE_IDENTITY",
+          "g": "VK_COMPONENT_SWIZZLE_IDENTITY",
+          "b": "VK_COMPONENT_SWIZZLE_IDENTITY",
+          "a": "VK_COMPONENT_SWIZZLE_IDENTITY"
+        },
+        "subresourceRange": {
+          "aspectMask": "0x00000001",
+          "baseMipLevel": 0,
+          "levelCount": 1,
+          "baseArrayLayer": 0,
+          "layerCount": 1
+        },
+        "pNext": null
+      },
+      "pAllocator": null,
+      "pView": 14
+    }
+  }
+},
+{
+  "index": 63,
+  "function": {
+    "name": "vkGetPhysicalDeviceFormatProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "format": "VK_FORMAT_B8G8R8A8_SRGB",
+      "pFormatProperties": {
+        "linearTilingFeatures": "0x0001dd81",
+        "optimalTilingFeatures": "0x0001dd81",
+        "bufferFeatures": "0x00000010"
+      }
+    }
+  }
+},
+{
+  "index": 64,
+  "function": {
+    "name": "vkGetPhysicalDeviceFormatProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "format": "VK_FORMAT_B8G8R8A8_SRGB",
+      "pFormatProperties": {
+        "linearTilingFeatures": "0x0001dd81",
+        "optimalTilingFeatures": "0x0001dd81",
+        "bufferFeatures": "0x00000010"
+      }
+    }
+  }
+},
+{
+  "index": 65,
+  "function": {
+    "name": "vkCreateImageView",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "device": 5,
+      "pCreateInfo": {
+        "sType": "VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO",
+        "flags": "0x00000000",
+        "image": 10,
+        "viewType": "VK_IMAGE_VIEW_TYPE_2D",
+        "format": "VK_FORMAT_B8G8R8A8_SRGB",
+        "components": {
+          "r": "VK_COMPONENT_SWIZZLE_IDENTITY",
+          "g": "VK_COMPONENT_SWIZZLE_IDENTITY",
+          "b": "VK_COMPONENT_SWIZZLE_IDENTITY",
+          "a": "VK_COMPONENT_SWIZZLE_IDENTITY"
+        },
+        "subresourceRange": {
+          "aspectMask": "0x00000001",
+          "baseMipLevel": 0,
+          "levelCount": 1,
+          "baseArrayLayer": 0,
+          "layerCount": 1
+        },
+        "pNext": null
+      },
+      "pAllocator": null,
+      "pView": 15
+    }
+  }
+},
+{
+  "index": 66,
+  "function": {
+    "name": "vkGetPhysicalDeviceFormatProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "format": "VK_FORMAT_B8G8R8A8_SRGB",
+      "pFormatProperties": {
+        "linearTilingFeatures": "0x0001dd81",
+        "optimalTilingFeatures": "0x0001dd81",
+        "bufferFeatures": "0x00000010"
+      }
+    }
+  }
+},
+{
+  "index": 67,
+  "function": {
+    "name": "vkGetPhysicalDeviceFormatProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "format": "VK_FORMAT_B8G8R8A8_SRGB",
+      "pFormatProperties": {
+        "linearTilingFeatures": "0x0001dd81",
+        "optimalTilingFeatures": "0x0001dd81",
+        "bufferFeatures": "0x00000010"
+      }
+    }
+  }
+},
+{
+  "index": 68,
+  "function": {
+    "name": "vkCreateImageView",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "device": 5,
+      "pCreateInfo": {
+        "sType": "VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO",
+        "flags": "0x00000000",
+        "image": 11,
+        "viewType": "VK_IMAGE_VIEW_TYPE_2D",
+        "format": "VK_FORMAT_B8G8R8A8_SRGB",
+        "components": {
+          "r": "VK_COMPONENT_SWIZZLE_IDENTITY",
+          "g": "VK_COMPONENT_SWIZZLE_IDENTITY",
+          "b": "VK_COMPONENT_SWIZZLE_IDENTITY",
+          "a": "VK_COMPONENT_SWIZZLE_IDENTITY"
+        },
+        "subresourceRange": {
+          "aspectMask": "0x00000001",
+          "baseMipLevel": 0,
+          "levelCount": 1,
+          "baseArrayLayer": 0,
+          "layerCount": 1
+        },
+        "pNext": null
+      },
+      "pAllocator": null,
+      "pView": 16
+    }
+  }
+},
+{
+  "index": 69,
+  "function": {
+    "name": "vkGetPhysicalDeviceFormatProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "format": "VK_FORMAT_B8G8R8A8_SRGB",
+      "pFormatProperties": {
+        "linearTilingFeatures": "0x0001dd81",
+        "optimalTilingFeatures": "0x0001dd81",
+        "bufferFeatures": "0x00000010"
+      }
+    }
+  }
+},
+{
+  "index": 70,
+  "function": {
+    "name": "vkGetPhysicalDeviceFormatProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "format": "VK_FORMAT_B8G8R8A8_SRGB",
+      "pFormatProperties": {
+        "linearTilingFeatures": "0x0001dd81",
+        "optimalTilingFeatures": "0x0001dd81",
+        "bufferFeatures": "0x00000010"
+      }
+    }
+  }
+},
+{
+  "index": 71,
+  "function": {
+    "name": "vkCreateImageView",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "device": 5,
+      "pCreateInfo": {
+        "sType": "VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO",
+        "flags": "0x00000000",
+        "image": 12,
+        "viewType": "VK_IMAGE_VIEW_TYPE_2D",
+        "format": "VK_FORMAT_B8G8R8A8_SRGB",
+        "components": {
+          "r": "VK_COMPONENT_SWIZZLE_IDENTITY",
+          "g": "VK_COMPONENT_SWIZZLE_IDENTITY",
+          "b": "VK_COMPONENT_SWIZZLE_IDENTITY",
+          "a": "VK_COMPONENT_SWIZZLE_IDENTITY"
+        },
+        "subresourceRange": {
+          "aspectMask": "0x00000001",
+          "baseMipLevel": 0,
+          "levelCount": 1,
+          "baseArrayLayer": 0,
+          "layerCount": 1
+        },
+        "pNext": null
+      },
+      "pAllocator": null,
+      "pView": 17
+    }
+  }
+},
+{
+  "index": 72,
+  "function": {
+    "name": "vkGetPhysicalDeviceFormatProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "format": "VK_FORMAT_B8G8R8A8_SRGB",
+      "pFormatProperties": {
+        "linearTilingFeatures": "0x0001dd81",
+        "optimalTilingFeatures": "0x0001dd81",
+        "bufferFeatures": "0x00000010"
+      }
+    }
+  }
+},
+{
+  "index": 73,
+  "function": {
+    "name": "vkGetPhysicalDeviceFormatProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "format": "VK_FORMAT_B8G8R8A8_SRGB",
+      "pFormatProperties": {
+        "linearTilingFeatures": "0x0001dd81",
+        "optimalTilingFeatures": "0x0001dd81",
+        "bufferFeatures": "0x00000010"
+      }
+    }
+  }
+},
+{
+  "index": 74,
+  "function": {
+    "name": "vkCreateRenderPass",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "device": 5,
+      "pCreateInfo": {
+        "sType": "VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO",
+        "flags": "0x00000000",
+        "attachmentCount": 1,
+        "pAttachments": [
+          {
+            "flags": "0x00000000",
+            "format": "VK_FORMAT_B8G8R8A8_SRGB",
+            "samples": "VK_SAMPLE_COUNT_1_BIT",
+            "loadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
+            "storeOp": "VK_ATTACHMENT_STORE_OP_STORE",
+            "stencilLoadOp": "VK_ATTACHMENT_LOAD_OP_DONT_CARE",
+            "stencilStoreOp": "VK_ATTACHMENT_STORE_OP_DONT_CARE",
+            "initialLayout": "VK_IMAGE_LAYOUT_UNDEFINED",
+            "finalLayout": "VK_IMAGE_LAYOUT_PRESENT_SRC_KHR"
+          }
+        ],
+        "subpassCount": 1,
+        "pSubpasses": [
+          {
+            "flags": "0x00000000",
+            "pipelineBindPoint": "VK_PIPELINE_BIND_POINT_GRAPHICS",
+            "inputAttachmentCount": 0,
+            "pInputAttachments": null,
+            "colorAttachmentCount": 1,
+            "pColorAttachments": [
+              {
+                "attachment": 0,
+                "layout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL"
+              }
+            ],
+            "pResolveAttachments": null,
+            "pDepthStencilAttachment": null,
+            "preserveAttachmentCount": 0,
+            "pPreserveAttachments": null
+          }
+        ],
+        "dependencyCount": 0,
+        "pDependencies": null,
+        "pNext": null
+      },
+      "pAllocator": null,
+      "pRenderPass": 18
+    }
+  }
+},
+{
+  "index": 75,
+  "function": {
+    "name": "vkCreateShaderModule",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "device": 5,
+      "pCreateInfo": {
+        "sType": "VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO",
+        "flags": "0x00000000",
+        "codeSize": 1504,
+        "pCode": "[Binary data]",
+        "pNext": null
+      },
+      "pAllocator": null,
+      "pShaderModule": 19
+    }
+  }
+},
+{
+  "index": 76,
+  "function": {
+    "name": "vkCreateShaderModule",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "device": 5,
+      "pCreateInfo": {
+        "sType": "VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO",
+        "flags": "0x00000000",
+        "codeSize": 572,
+        "pCode": "[Binary data]",
+        "pNext": null
+      },
+      "pAllocator": null,
+      "pShaderModule": 20
+    }
+  }
+},
+{
+  "index": 77,
+  "function": {
+    "name": "vkCreatePipelineLayout",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "device": 5,
+      "pCreateInfo": {
+        "sType": "VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO",
+        "flags": "0x00000000",
+        "setLayoutCount": 0,
+        "pSetLayouts": null,
+        "pushConstantRangeCount": 0,
+        "pPushConstantRanges": null,
+        "pNext": null
+      },
+      "pAllocator": null,
+      "pPipelineLayout": 21
+    }
+  }
+},
+{
+  "index": 78,
+  "function": {
+    "name": "vkGetPhysicalDeviceFormatProperties",
+    "thread": 1,
+    "args": {
+      "physicalDevice": 2,
+      "format": "VK_FORMAT_B8G8R8A8_SRGB",
+      "pFormatProperties": {
+        "linearTilingFeatures": "0x0001dd81",
+        "optimalTilingFeatures": "0x0001dd81",
+        "bufferFeatures": "0x00000010"
+      }
+    }
+  }
+},
+{
+  "index": 79,
+  "function": {
+    "name": "vkCreateGraphicsPipelines",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "device": 5,
+      "pipelineCache": 0,
+      "createInfoCount": 1,
+      "pCreateInfos": [
+        {
+          "sType": "VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO",
+          "flags": "0x00000000",
+          "stageCount": 2,
+          "pStages": [
+            {
+              "sType": "VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO",
+              "flags": "0x00000000",
+              "stage": "VK_SHADER_STAGE_VERTEX_BIT",
+              "module": 19,
+              "pName": "main",
+              "pSpecializationInfo": null,
+              "pNext": null
+            },
+            {
+              "sType": "VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO",
+              "flags": "0x00000000",
+              "stage": "VK_SHADER_STAGE_FRAGMENT_BIT",
+              "module": 20,
+              "pName": "main",
+              "pSpecializationInfo": null,
+              "pNext": null
+            }
+          ],
+          "pVertexInputState": {
+            "sType": "VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO",
+            "flags": "0x00000000",
+            "vertexBindingDescriptionCount": 0,
+            "pVertexBindingDescriptions": null,
+            "vertexAttributeDescriptionCount": 0,
+            "pVertexAttributeDescriptions": null,
+            "pNext": null
+          },
+          "pInputAssemblyState": {
+            "sType": "VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO",
+            "flags": "0x00000000",
+            "topology": "VK_PRIMITIVE_TOPOLOGY_LINE_LIST",
+            "primitiveRestartEnable": false,
+            "pNext": null
+          },
+          "pTessellationState": null,
+          "pViewportState": {
+            "sType": "VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO",
+            "flags": "0x00000000",
+            "viewportCount": 1,
+            "pViewports": null,
+            "scissorCount": 1,
+            "pScissors": null,
+            "pNext": null
+          },
+          "pRasterizationState": {
+            "sType": "VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO",
+            "flags": "0x00000000",
+            "depthClampEnable": false,
+            "rasterizerDiscardEnable": false,
+            "polygonMode": "VK_POLYGON_MODE_FILL",
+            "cullMode": "0x00000002",
+            "frontFace": "VK_FRONT_FACE_CLOCKWISE",
+            "depthBiasEnable": false,
+            "depthBiasConstantFactor": 0.0,
+            "depthBiasClamp": 0.0,
+            "depthBiasSlopeFactor": 0.0,
+            "lineWidth": 1.0,
+            "pNext": null
+          },
+          "pMultisampleState": {
+            "sType": "VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO",
+            "flags": "0x00000000",
+            "rasterizationSamples": "VK_SAMPLE_COUNT_1_BIT",
+            "sampleShadingEnable": false,
+            "minSampleShading": 1.0,
+            "pSampleMask": null,
+            "alphaToCoverageEnable": false,
+            "alphaToOneEnable": false,
+            "pNext": null
+          },
+          "pDepthStencilState": null,
+          "pColorBlendState": {
+            "sType": "VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO",
+            "flags": "0x00000000",
+            "logicOpEnable": false,
+            "logicOp": "VK_LOGIC_OP_COPY",
+            "attachmentCount": 1,
+            "pAttachments": [
+              {
+                "blendEnable": false,
+                "srcColorBlendFactor": "VK_BLEND_FACTOR_ONE",
+                "dstColorBlendFactor": "VK_BLEND_FACTOR_ZERO",
+                "colorBlendOp": "VK_BLEND_OP_ADD",
+                "srcAlphaBlendFactor": "VK_BLEND_FACTOR_ONE",
+                "dstAlphaBlendFactor": "VK_BLEND_FACTOR_ZERO",
+                "alphaBlendOp": "VK_BLEND_OP_ADD",
+                "colorWriteMask": "0x0000000f"
+              }
+            ],
+            "blendConstants": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "pNext": null
+          },
+          "pDynamicState": {
+            "sType": "VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO",
+            "flags": "0x00000000",
+            "dynamicStateCount": 2,
+            "pDynamicStates": [
+              "VK_DYNAMIC_STATE_VIEWPORT",
+              "VK_DYNAMIC_STATE_SCISSOR"
+            ],
+            "pNext": null
+          },
+          "layout": 21,
+          "renderPass": 18,
+          "subpass": 0,
+          "basePipelineHandle": 0,
+          "basePipelineIndex": -1,
+          "pNext": null
+        }
+      ],
+      "pAllocator": null,
+      "pPipelines": [
+        22
+      ]
+    }
+  }
+},
+{
+  "index": 80,
+  "function": {
+    "name": "vkDestroyShaderModule",
+    "thread": 1,
+    "args": {
+      "device": 5,
+      "shaderModule": 20,
+      "pAllocator": null
+    }
+  }
+},
+{
+  "index": 81,
+  "function": {
+    "name": "vkDestroyShaderModule",
+    "thread": 1,
+    "args": {
+      "device": 5,
+      "shaderModule": 19,
+      "pAllocator": null
+    }
+  }
+},
+{
+  "index": 82,
+  "function": {
+    "name": "vkCreateFramebuffer",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "device": 5,
+      "pCreateInfo": {
+        "sType": "VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO",
+        "flags": "0x00000000",
+        "renderPass": 18,
+        "attachmentCount": 1,
+        "pAttachments": [
+          13
+        ],
+        "width": 800,
+        "height": 600,
+        "layers": 1,
+        "pNext": null
+      },
+      "pAllocator": null,
+      "pFramebuffer": 23
+    }
+  }
+},
+{
+  "index": 83,
+  "function": {
+    "name": "vkCreateFramebuffer",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "device": 5,
+      "pCreateInfo": {
+        "sType": "VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO",
+        "flags": "0x00000000",
+        "renderPass": 18,
+        "attachmentCount": 1,
+        "pAttachments": [
+          14
+        ],
+        "width": 800,
+        "height": 600,
+        "layers": 1,
+        "pNext": null
+      },
+      "pAllocator": null,
+      "pFramebuffer": 24
+    }
+  }
+},
+{
+  "index": 84,
+  "function": {
+    "name": "vkCreateFramebuffer",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "device": 5,
+      "pCreateInfo": {
+        "sType": "VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO",
+        "flags": "0x00000000",
+        "renderPass": 18,
+        "attachmentCount": 1,
+        "pAttachments": [
+          15
+        ],
+        "width": 800,
+        "height": 600,
+        "layers": 1,
+        "pNext": null
+      },
+      "pAllocator": null,
+      "pFramebuffer": 25
+    }
+  }
+},
+{
+  "index": 85,
+  "function": {
+    "name": "vkCreateFramebuffer",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "device": 5,
+      "pCreateInfo": {
+        "sType": "VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO",
+        "flags": "0x00000000",
+        "renderPass": 18,
+        "attachmentCount": 1,
+        "pAttachments": [
+          16
+        ],
+        "width": 800,
+        "height": 600,
+        "layers": 1,
+        "pNext": null
+      },
+      "pAllocator": null,
+      "pFramebuffer": 26
+    }
+  }
+},
+{
+  "index": 86,
+  "function": {
+    "name": "vkCreateFramebuffer",
+    "thread": 1,
+    "return": "VK_SUCCESS",
+    "args": {
+      "device": 5,
+      "pCreateInfo": {
+        "sType": "VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO",
+        "flags": "0x00000000",
+        "renderPass": 18,
+        "attachmentCount": 1,
+        "pAttachments": [
+          17
+        ],
+        "width": 800,
+        "height": 600,
+        "layers": 1,
+        "pNext": null
+      },
+      "pAllocator": null,
+      "pFramebuffer": 27
+    }
+  }
+},
+{
+  "index": 87,
+  "function": {
+    "name": "vkDestroyFramebuffer",
+    "thread": 1,
+    "args": {
+      "device": 5,
+      "framebuffer": 23,
+      "pAllocator": null
+    }
+  }
+},
+{
+  "index": 88,
+  "function": {
+    "name": "vkDestroyFramebuffer",
+    "thread": 1,
+    "args": {
+      "device": 5,
+      "framebuffer": 24,
+      "pAllocator": null
+    }
+  }
+},
+{
+  "index": 89,
+  "function": {
+    "name": "vkDestroyFramebuffer",
+    "thread": 1,
+    "args": {
+      "device": 5,
+      "framebuffer": 25,
+      "pAllocator": null
+    }
+  }
+},
+{
+  "index": 90,
+  "function": {
+    "name": "vkDestroyFramebuffer",
+    "thread": 1,
+    "args": {
+      "device": 5,
+      "framebuffer": 26,
+      "pAllocator": null
+    }
+  }
+},
+{
+  "index": 91,
+  "function": {
+    "name": "vkDestroyFramebuffer",
+    "thread": 1,
+    "args": {
+      "device": 5,
+      "framebuffer": 27,
+      "pAllocator": null
+    }
+  }
+},
+{
+  "index": 92,
+  "function": {
+    "name": "vkDestroyPipeline",
+    "thread": 1,
+    "args": {
+      "device": 5,
+      "pipeline": 22,
+      "pAllocator": null
+    }
+  }
+},
+{
+  "index": 93,
+  "function": {
+    "name": "vkDestroyPipelineLayout",
+    "thread": 1,
+    "args": {
+      "device": 5,
+      "pipelineLayout": 21,
+      "pAllocator": null
+    }
+  }
+},
+{
+  "index": 94,
+  "function": {
+    "name": "vkDestroyRenderPass",
+    "thread": 1,
+    "args": {
+      "device": 5,
+      "renderPass": 18,
+      "pAllocator": null
+    }
+  }
+},
+{
+  "index": 95,
+  "function": {
+    "name": "vkDestroyImageView",
+    "thread": 1,
+    "args": {
+      "device": 5,
+      "imageView": 13,
+      "pAllocator": null
+    }
+  }
+},
+{
+  "index": 96,
+  "function": {
+    "name": "vkDestroyImageView",
+    "thread": 1,
+    "args": {
+      "device": 5,
+      "imageView": 14,
+      "pAllocator": null
+    }
+  }
+},
+{
+  "index": 97,
+  "function": {
+    "name": "vkDestroyImageView",
+    "thread": 1,
+    "args": {
+      "device": 5,
+      "imageView": 15,
+      "pAllocator": null
+    }
+  }
+},
+{
+  "index": 98,
+  "function": {
+    "name": "vkDestroyImageView",
+    "thread": 1,
+    "args": {
+      "device": 5,
+      "imageView": 16,
+      "pAllocator": null
+    }
+  }
+},
+{
+  "index": 99,
+  "function": {
+    "name": "vkDestroyImageView",
+    "thread": 1,
+    "args": {
+      "device": 5,
+      "imageView": 17,
+      "pAllocator": null
+    }
+  }
+},
+{
+  "index": 100,
+  "function": {
+    "name": "vkDestroySwapchainKHR",
+    "thread": 1,
+    "args": {
+      "device": 5,
+      "swapchain": 7,
+      "pAllocator": null
+    }
+  }
+},
+{
+  "index": 101,
+  "function": {
+    "name": "vkDestroyDevice",
+    "thread": 1,
+    "args": {
+      "device": 5,
+      "pAllocator": null
+    }
+  }
+},
+{
+  "index": 102,
+  "function": {
+    "name": "vkDestroyDebugUtilsMessengerEXT",
+    "thread": 1,
+    "args": {
+      "instance": 1,
+      "messenger": 3,
+      "pAllocator": null
+    }
+  }
+},
+{
+  "index": 103,
+  "function": {
+    "name": "vkDestroySurfaceKHR",
+    "thread": 1,
+    "args": {
+      "instance": 1,
+      "surface": 4,
+      "pAllocator": null
+    }
+  }
+},
+{
+  "index": 104,
+  "function": {
+    "name": "vkDestroyInstance",
+    "thread": 1,
+    "args": {
+      "instance": 1,
+      "pAllocator": null
+    }
+  }
+}
+]
