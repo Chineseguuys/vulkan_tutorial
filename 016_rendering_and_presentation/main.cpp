@@ -265,7 +265,7 @@ private:
         presentInfo.pSwapchains = swapChains;
 
         presentInfo.pImageIndices = &imageIndex;
-        
+
         vkQueuePresentKHR(mPresentQueue, &presentInfo);
     }
 
@@ -790,13 +790,21 @@ private:
 
     void createRenderPass() {
         VkAttachmentDescription colorAttachment{};
+        // attachment 的格式，例如 VK_FORMAT_B8G8R8A8_SRGB
         colorAttachment.format = mSwapChainImageFormat;
+        // 多重采用，这里表示不使用多重采样
         colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+        // 在 render pass 开始的时候，如何处理 attachment 的内容
         colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        // 在 render pass 结束的时候，如何处理 attachment 的内容
         colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        // 在 render pass 开始的时候，如何处理模板缓冲的内容
         colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        // 在 render pass 结束的时候，如何处理模板缓冲的内容
         colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        // attachments 在 render pass 开始之前的 layout
         colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        // attachments 在 render pass 结束后的 layout
         colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
         // subpasses and attachment reference
@@ -811,10 +819,11 @@ private:
         subpass.pColorAttachments = &colorAttachmentRef;
 
         VkSubpassDependency dependency{};
+        // 渲染通道之外
         dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
         dependency.dstSubpass = 0;
         dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        dependency.srcAccessMask = 0;
+        dependency.srcAccessMask = VK_PIPELINE_STAGE_NONE;
         dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
         dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
@@ -1124,6 +1133,7 @@ private:
         vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
         // ready to issue the draw command for the triangle
+        // three vertices and draw one triangle
         vkCmdDraw(commandBuffer, 3, 1, 0, 0);
 
         vkCmdEndRenderPass(commandBuffer);
