@@ -367,6 +367,7 @@ private:
         SwapChainSupportDetails swapChainSupport = querySwapChainSupport(mPhysicalDevice);
 
         VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.mFormats);
+        // 呈现模式，它决定了如何将画面送往屏幕
         VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.mPresentModes);
         VkExtent2D extent = chooseSwapExtent(swapChainSupport.mCapabilities);
 
@@ -712,6 +713,7 @@ private:
 
     VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) {
         for (const auto& availablePresentMode : availablePresentModes) {
+            // 不会在交换链满的时候，去阻塞应用程序，队列中的图像会直接被替换为程序新提交的图像
             if  (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
                 spdlog::trace("{} choose {}", __func__, "VK_PRESENT_MODE_MAILBOX_KHR");
                 return availablePresentMode;
@@ -721,12 +723,16 @@ private:
         return VK_PRESENT_MODE_FIFO_KHR;
     }
 
+    /**
+     * 设置交换范围，它是交换链中的图像的分辨率，它几乎总是和我们要显示的窗口大小相同
+    */
     VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) {
         if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
             return capabilities.currentExtent;
         } else {
             int width, height;
             glfwGetFramebufferSize(mWindow, &width, &height);
+            spdlog::trace("{} glfwGetFrameBufferSize [{}x{}]", __func__, width, height);
 
             VkExtent2D actualExtent = {
                 static_cast<uint32_t>(width),
@@ -768,7 +774,6 @@ private:
             createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
             createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
             createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-
             // subresourceRange 字段描述了图像的用途以及应访问图像的哪个部分。
             // 我们的图像将作为色彩目标使用，不需要任何映射层或多图层
             createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
@@ -868,7 +873,7 @@ private:
             fragShaderStageInfo
         };
 
-        //Vertex state
+        //Vertex state 需要加载顶点数据的时候，使用，这里由于所有的顶点数据写在了 glsl 中，无需指定
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
         vertexInputInfo.vertexBindingDescriptionCount = 0;
@@ -1110,7 +1115,11 @@ private:
         renderPassInfo.renderArea.offset = {0, 0};
         renderPassInfo.renderArea.extent = mSwapChainExtent;
 
+#ifndef USE_SELF_DEFINED_CLEAR_COLOR
         VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
+#else
+        VkClearValue clearColor = {{{0.82f, 0.82f, 0.82f, 1.0f}}};
+#endif
         renderPassInfo.clearValueCount = 1;
         renderPassInfo.pClearValues = &clearColor;
 
@@ -1129,7 +1138,7 @@ private:
 
         VkRect2D scissor{};
         scissor.offset = {0, 0};
-        scissor.extent = mSwapChainExtent;
+        scissor.extent = {mSwapChainExtent.width, mSwapChainExtent.height};
         vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
         // ready to issue the draw command for the triangle

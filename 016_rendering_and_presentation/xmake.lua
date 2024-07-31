@@ -1,6 +1,9 @@
 -- 查找 spdlog 库， 类似于 cmake 中的 find_package() 函数
 add_requires("spdlog", {system = true})
 
+-- global definations
+--add_defines("USE_SELF_DEFINED_CLEAR_COLOR")
+
 if is_mode("debug") then
     set_symbols("debug")
     set_optimize("none")
