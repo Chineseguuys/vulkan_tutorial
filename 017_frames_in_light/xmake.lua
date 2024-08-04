@@ -16,7 +16,7 @@ if is_mode("debug") then
     add_ldflags("-g")
 end
 
-target("rendering")
+target("framesInFlight")
     set_kind("binary")
     add_files("main.cpp")
 
