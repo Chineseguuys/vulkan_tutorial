@@ -37,6 +37,9 @@ const bool enableValidationLayers = false;
 const bool enableValidationLayers = true;
 #endif
 
+// global glfw window project
+GLFWwindow* globalWindow = nullptr;
+
 VkResult CreateDebugUtilsMessengerEXT(VkInstance instance,
                                       VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
                                       const VkAllocationCallbacks *pAllocator,
@@ -139,18 +142,31 @@ private:
     VkSemaphore mRenderFinishedSemaphore;
     VkFence mInFlightFence;
 
+    // for glfw window size changed
+    bool mFrameBufferResized = false;
+
     void initWindow()
     {
         glfwInit();
 
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
         mWindow = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
         if (mWindow == nullptr) {
             spdlog::error("{} glfwCreateWindow failed", __func__);
             throw std::runtime_error("glfwCreateWindow failed");
         }
+
+        globalWindow = mWindow;
+        glfwSetWindowUserPointer(globalWindow, this);
+        glfwSetFramebufferSizeCallback(globalWindow, frameBufferResizedCallback);
+    }
+
+    static void frameBufferResizedCallback(GLFWwindow* window, int width, int height) {
+        spdlog::debug("{}: window changed to [{}x{}]", __func__, width, height);
+        auto app = reinterpret_cast<HelloTriangleApplication*>(glfwGetWindowUserPointer(globalWindow));
+        app->mFrameBufferResized = true;
     }
 
     void initVulkan()
@@ -233,12 +249,21 @@ private:
         vkResetFences(mDevice, 1, &mInFlightFence);
 
         uint32_t imageIndex;
-        vkAcquireNextImageKHR(
+        VkResult result = vkAcquireNextImageKHR(
             mDevice,
             mSwapChain,
             UINT64_MAX,
             mImageAvailableSemaphore,
             VK_NULL_HANDLE, &imageIndex);
+
+        if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+            spdlog::debug("{}: vk error out of data khr", __func__);
+            recreateSwapChain();
+            return;
+        } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+            spdlog::error("{}: vkAcquireNextImageKHR", __func__);
+            throw std::runtime_error("failed to acquire swap images");
+        }
         vkResetCommandBuffer(mCommandBuffer, 0);
         recordCommandBuffer(mCommandBuffer, imageIndex);
 
@@ -273,7 +298,15 @@ private:
 
         presentInfo.pImageIndices = &imageIndex;
 
-        vkQueuePresentKHR(mPresentQueue, &presentInfo);
+        result = vkQueuePresentKHR(mPresentQueue, &presentInfo);
+        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || mFrameBufferResized) {
+            spdlog::debug("{}: recreateSwapChain", __func__);
+            mFrameBufferResized = false;
+            recreateSwapChain();
+        } else if (result != VK_SUCCESS) {
+            spdlog::error("{}: vkQeueuPresentKHR error", __func__);
+            throw std::runtime_error("failed to present swap chain image!");
+        }
     }
 
     void createInstance()
@@ -463,6 +496,7 @@ private:
     }
 
     void cleanupSwapChain() {
+        spdlog::debug("{}", __func__);
         for (int i = 0; i < mSwapChainFramebuffers.size(); i++) {
             vkDestroyFramebuffer(mDevice, mSwapChainFramebuffers[i], nullptr);
         }
