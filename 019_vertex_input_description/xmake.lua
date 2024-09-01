@@ -16,7 +16,7 @@ if is_mode("debug") then
     add_ldflags("-g")
 end
 
-target("recreating_swapchain")
+target("vertex_input_description")
     set_kind("binary")
     add_files("main.cpp")
 

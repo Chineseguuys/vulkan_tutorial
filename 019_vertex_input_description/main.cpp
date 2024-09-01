@@ -9,14 +9,64 @@
 
 #include <iostream>
 #include <vector>
+#include <array>
 #include <string>
 #include <fstream>
 #include <cstring>
 #include <cstdlib>
+#include <cstddef>
 #include <optional>
 
 // for log print
 #include <spdlog/spdlog.h>
+
+// for matrix and vertex
+#include <glm/glm.hpp>
+
+struct Vertex {
+    glm::vec2 mPos;
+    glm::vec3 mColor;
+
+    static VkVertexInputBindingDescription getBindingDescription() {
+        VkVertexInputBindingDescription bindingDescription{};
+
+        // The binding parameter specifies the index of the binding in the array of bindings
+        // 你可能有多组 vertex 数据分别绘制不同的物品(例如 A 用来绘制三角形， B 用来绘制圆形等等)
+        // gpu 在绘制的时候，可以同时绑定多组 vertex 数据，每一组的数据需要一个 binding 点，值从 0 开始
+        // gpu 支持的同时绑定的 vertex 组的最大数量可以通过 vkGetPhysicalDeviceProperties() api 来进行查询
+        bindingDescription.binding = 0;
+        // 数据的 stride
+        // The stride parameter specifies the number of bytes from one entry to the next
+        bindingDescription.stride = sizeof(Vertex);
+        // 查找下一个数据的时机，在遍历每一个节点的时候，就查找下一个数据
+        bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+        return bindingDescription;
+    }
+
+    static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescription() {
+        std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
+
+        attributeDescriptions[0].binding = 0;
+        attributeDescriptions[0].location = 0;
+        attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
+        attributeDescriptions[0].offset = offsetof(Vertex, mPos);
+
+        attributeDescriptions[1].binding = 0;
+        attributeDescriptions[1].location = 1;
+        attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+        attributeDescriptions[1].offset = offsetof(Vertex, mColor);
+
+        return attributeDescriptions;
+    }
+};
+
+const std::vector<Vertex> vertices = {
+    // pos , color
+    {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+    {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+    {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+};
 
 const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;
@@ -133,6 +183,10 @@ private:
     // command buffer allocation
     VkCommandBuffer mCommandBuffer;
 
+    // vertex buffer
+    VkBuffer mVertexBuffer;
+    VkDeviceMemory mVertexBufferMemory;
+
     // synchronization object
     // use semaphore for gpu sync, and use fence for sync between gpu and cpu
     VkSemaphore mImageAvailableSemaphore;
@@ -178,6 +232,8 @@ private:
         createGraphicPipeline();
         createFrameBuffers();
         createCommandPool();
+        // create vertex buffer and map it to gpu mem after create Command pool
+        createVertexBuffer();
         createCommandBuffer();
         createSyncObjects();
     }
@@ -206,26 +262,24 @@ private:
 
         cleanupSwapChain();
 
+        // vertex buffer is not dependent on the swap chain, we need clean it by my self
+        // the buffer should be available for use in rendering commands until the end of 
+        // program
+        vkDestroyBuffer(mDevice, mVertexBuffer, nullptr);
+        // 就像 C++ 中的动态内存分配一样，内存应该在某个时候被释放
+        // 一旦缓冲区不再使用，绑定到缓冲区对象的内存可能会被释放，因此让我们在缓冲区被销毁后释放它
+        vkFreeMemory(mDevice, mVertexBufferMemory, nullptr);
+
         vkDestroySemaphore(mDevice, mImageAvailableSemaphore, nullptr);
         vkDestroySemaphore(mDevice, mRenderFinishedSemaphore, nullptr);
         vkDestroyFence(mDevice, mInFlightFence, nullptr);
 
         vkDestroyCommandPool(mDevice, mCommandPool, nullptr);
 
-        //for (auto& framebuffer : mSwapChainFramebuffers) {
-        //    vkDestroyFramebuffer(mDevice, framebuffer, nullptr);
-        //}
-
         vkDestroyPipeline(mDevice, mGraphicsPipeline, nullptr);
         vkDestroyPipelineLayout(mDevice, mPipelineLayout, nullptr);
         vkDestroyRenderPass(mDevice, mRenderPass, nullptr);
 
-        //for (auto& imageView : mSwapChainImageViews) {
-        //    vkDestroyImageView(mDevice, imageView, nullptr);
-        //}
-
-        //vkDestroySwapchainKHR(mDevice, mSwapChain, nullptr);
-        
         vkDestroyDevice(mDevice, nullptr);
 
         if (enableValidationLayers)
@@ -314,7 +368,7 @@ private:
 
         VkApplicationInfo appInfo{};
         appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-        appInfo.pApplicationName = "Frame In Light";
+        appInfo.pApplicationName = "Vertex Input Description";
         appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
         appInfo.pEngineName = "No Engine";
         appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
@@ -565,9 +619,25 @@ private:
         }
     }
 
+    uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
+        VkPhysicalDeviceMemoryProperties memProperties;
+        vkGetPhysicalDeviceMemoryProperties(mPhysicalDevice, &memProperties);
+
+        for (int32_t i = 0; i < memProperties.memoryTypeCount; ++i) {
+            if ((typeFilter & (1 << i)) &&
+                ((memProperties.memoryTypes[i].propertyFlags & properties) == properties)) {
+                spdlog::info("{}: return memory type with index {}", __func__, i);
+                return i;
+            }
+        }
+
+        spdlog::error("{}: failed to find suitable memory type", __func__);
+        throw std::runtime_error("failed to find suitable memory type!");
+    }
+
     bool isDeviceSuitable(VkPhysicalDevice pDevice)
     {
-#if 0
+#if 1
         // print device properities and features
         VkPhysicalDeviceProperties deviceProperties;
         VkPhysicalDeviceFeatures deviceFeatures;
@@ -942,11 +1012,15 @@ private:
         //Vertex state 需要加载顶点数据的时候，使用，这里由于所有的顶点数据写在了 glsl 中，无需指定
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        vertexInputInfo.vertexBindingDescriptionCount = 0;
-        vertexInputInfo.pVertexBindingDescriptions = nullptr;
-        vertexInputInfo.vertexAttributeDescriptionCount = 0;
+
+        VkVertexInputBindingDescription bindDescription = Vertex::getBindingDescription();
+        auto attributeDescription = Vertex::getAttributeDescription();
+
+        vertexInputInfo.vertexBindingDescriptionCount = 1;
+        vertexInputInfo.vertexAttributeDescriptionCount = static_cast<unsigned int>(attributeDescription.size());
+        vertexInputInfo.pVertexBindingDescriptions = &bindDescription;
         // 类似于 opengl 中的 glVertexAttribPointer() 函数的功能？
-        vertexInputInfo.pVertexAttributeDescriptions = nullptr;
+        vertexInputInfo.pVertexAttributeDescriptions = attributeDescription.data();
 
         // input assembly
         VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
@@ -1165,6 +1239,52 @@ private:
         }
     }
 
+    void createVertexBuffer() {
+        VkBufferCreateInfo bufferInfo{};
+        bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+        bufferInfo.size = sizeof(vertices[0]) * vertices.size();
+        bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+        // 和 image chains 中的 image 相同，buffers 也可以被一个特定的 queue 占用，也可以在多个
+        // queues 之间进行共享。在这里这个 buffer 只在 graphics queue 中使用
+        bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        // leave the flags to default value of 0
+        bufferInfo.flags = 0;
+
+        if (vkCreateBuffer(mDevice, &bufferInfo, nullptr, &mVertexBuffer) != VK_SUCCESS) {
+            spdlog::error("{}: create vertex buffer failed", __func__);
+            throw std::runtime_error("failed to create vertex buffer!");
+        }
+
+        VkMemoryRequirements memRequirements;
+        vkGetBufferMemoryRequirements(mDevice, mVertexBuffer, &memRequirements);
+
+        VkMemoryAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+        allocInfo.allocationSize = memRequirements.size;
+        // 现在，您只需将顶点数据 memcpy 到映射的内存，然后使用 vkUnmapMemory 再次取消映射
+        // 遗憾的是，驱动程序可能不会立即将数据复制到缓冲区内存中，例如由于缓存
+        // 对缓冲区的写入也可能在 Map 内存中尚不可见。有两种方法可以处理该问题
+        //  1. 使用主机一致的内存堆，用 VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+        //  2. 在写入映射内存后调用 vkFlushMappedMemoryRanges，
+        // 并在从映射内存读取之前调用 vkInvalidateMappedMemoryRanges
+        allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+        if (vkAllocateMemory(mDevice, &allocInfo, nullptr, &mVertexBufferMemory) != VK_SUCCESS) {
+            spdlog::error("{} failed to allocate vertex buffer memory", __func__);
+            throw std::runtime_error("failed to allocate vertex buffer memory");
+        }
+        // 前三个参数是不言自明的，第四个参数是内存区域内的偏移量。由于此内存是专门为此顶点缓冲区分配的，
+        // 因此偏移量仅为 0。如果偏移量不为零，则它需要能被 memRequirements.alignment 整除
+        vkBindBufferMemory(mDevice, mVertexBuffer, mVertexBufferMemory, 0);
+
+        void* data;
+        // 将 gpu 专用内存映射到 cpu 可访问内存中来
+        vkMapMemory(mDevice, mVertexBufferMemory, 0, bufferInfo.size, 0, &data);
+        memcpy(data, vertices.data(), static_cast<size_t>(bufferInfo.size));
+        vkUnmapMemory(mDevice, mVertexBufferMemory);
+    }
+
     void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -1186,7 +1306,7 @@ private:
 #ifndef USE_SELF_DEFINED_CLEAR_COLOR
         VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
 #else
-        VkClearValue clearColor = {{{0.82f, 0.82f, 0.82f, 1.0f}}};
+        VkClearValue clearColor = {{{0.102f, 0.102f, 0.102f, 1.0f}}};
 #endif
         renderPassInfo.clearValueCount = 1;
         renderPassInfo.pClearValues = &clearColor;
@@ -1209,9 +1329,14 @@ private:
         scissor.extent = {mSwapChainExtent.width, mSwapChainExtent.height};
         vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
+        // vertex buffer
+        VkBuffer vertexBuffers[] = {mVertexBuffer};
+        VkDeviceSize offsets[] = {0};
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+
         // ready to issue the draw command for the triangle
         // three vertices and draw one triangle
-        vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+        vkCmdDraw(commandBuffer, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
 
         vkCmdEndRenderPass(commandBuffer);
 
