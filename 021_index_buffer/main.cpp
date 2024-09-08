@@ -9,19 +9,72 @@
 
 #include <iostream>
 #include <vector>
+#include <array>
 #include <string>
 #include <fstream>
 #include <cstring>
 #include <cstdlib>
+#include <cstddef>
 #include <optional>
 
 // for log print
 #include <spdlog/spdlog.h>
 
+// for matrix and vertex
+#include <glm/glm.hpp>
+
+struct Vertex {
+    glm::vec2 mPos;
+    glm::vec3 mColor;
+
+    static VkVertexInputBindingDescription getBindingDescription() {
+        VkVertexInputBindingDescription bindingDescription{};
+
+        // The binding parameter specifies the index of the binding in the array of bindings
+        // 你可能有多组 vertex 数据分别绘制不同的物品(例如 A 用来绘制三角形， B 用来绘制圆形等等)
+        // gpu 在绘制的时候，可以同时绑定多组 vertex 数据，每一组的数据需要一个 binding 点，值从 0 开始
+        // gpu 支持的同时绑定的 vertex 组的最大数量可以通过 vkGetPhysicalDeviceProperties() api 来进行查询
+        bindingDescription.binding = 0;
+        // 数据的 stride
+        // The stride parameter specifies the number of bytes from one entry to the next
+        bindingDescription.stride = sizeof(Vertex);
+        // 查找下一个数据的时机，在遍历每一个节点的时候，就查找下一个数据
+        bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+        return bindingDescription;
+    }
+
+    static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescription() {
+        std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
+
+        attributeDescriptions[0].binding = 0;
+        attributeDescriptions[0].location = 0;
+        attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
+        attributeDescriptions[0].offset = offsetof(Vertex, mPos);
+
+        attributeDescriptions[1].binding = 0;
+        attributeDescriptions[1].location = 1;
+        attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+        attributeDescriptions[1].offset = offsetof(Vertex, mColor);
+
+        return attributeDescriptions;
+    }
+};
+
+const std::vector<Vertex> vertices = {
+    // pos , color
+    {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+    {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+    {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+    {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+};
+
+const std::vector<uint16_t> indices = {
+    0, 1, 2, 2, 3, 0
+};
+
 const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;
-
-const int MAX_FRAMES_IN_FLIGHT = 2;
 
 const std::vector<const char *> validationLayers = {
     "VK_LAYER_KHRONOS_validation", // debug, logging and validate
@@ -133,29 +186,45 @@ private:
     // command pools
     VkCommandPool mCommandPool;
     // command buffer allocation
-    std::vector<VkCommandBuffer> mCommandBuffers;
+    VkCommandBuffer mCommandBuffer;
+
+    // vertex buffer
+    VkBuffer mVertexBuffer;
+    VkDeviceMemory mVertexBufferMemory;
+    // index buffer
+    VkBuffer mIndexBuffer;
+    VkDeviceMemory mIndexBufferMemory;
 
     // synchronization object
     // use semaphore for gpu sync, and use fence for sync between gpu and cpu
-    std::vector<VkSemaphore> mImageAvailableSemaphores;
-    std::vector<VkSemaphore> mRenderFinishedSemaphores;
-    std::vector<VkFence> mInFlightFences;
+    VkSemaphore mImageAvailableSemaphore;
+    VkSemaphore mRenderFinishedSemaphore;
+    VkFence mInFlightFence;
 
-    // 用来记录使用的 frame
-    uint32_t mCurrentFrame = 0;
+    // for glfw window size changed
+    bool mFrameBufferResized = false;
 
     void initWindow()
     {
         glfwInit();
 
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
         mWindow = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
         if (mWindow == nullptr) {
             spdlog::error("{} glfwCreateWindow failed", __func__);
             throw std::runtime_error("glfwCreateWindow failed");
         }
+
+        glfwSetWindowUserPointer(mWindow, this);
+        glfwSetFramebufferSizeCallback(mWindow, frameBufferResizedCallback);
+    }
+
+    static void frameBufferResizedCallback(GLFWwindow* window, int width, int height) {
+        spdlog::debug("{}: window changed to [{}x{}]", __func__, width, height);
+        auto app = reinterpret_cast<HelloTriangleApplication*>(glfwGetWindowUserPointer(window));
+        app->mFrameBufferResized = true;
     }
 
     void initVulkan()
@@ -171,7 +240,10 @@ private:
         createGraphicPipeline();
         createFrameBuffers();
         createCommandPool();
-        createCommandBuffers();
+        // create vertex buffer and map it to gpu mem after create Command pool
+        createVertexBuffer();
+        createIndexBuffer();
+        createCommandBuffer();
         createSyncObjects();
     }
 
@@ -199,29 +271,28 @@ private:
 
         cleanupSwapChain();
 
-        // destory all the sync objects
-        for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-            vkDestroySemaphore(mDevice, mRenderFinishedSemaphores[i], nullptr);
-            vkDestroySemaphore(mDevice, mImageAvailableSemaphores[i], nullptr);
-            vkDestroyFence(mDevice, mInFlightFences[i], nullptr);
-        }
+        // vertex buffer is not dependent on the swap chain, we need clean it by my self
+        // the buffer should be available for use in rendering commands until the end of 
+        // program
+        vkDestroyBuffer(mDevice, mVertexBuffer, nullptr);
+        // 就像 C++ 中的动态内存分配一样，内存应该在某个时候被释放
+        // 一旦缓冲区不再使用，绑定到缓冲区对象的内存可能会被释放，因此让我们在缓冲区被销毁后释放它
+        vkFreeMemory(mDevice, mVertexBufferMemory, nullptr);
+
+        // destory index buffer
+        vkDestroyBuffer(mDevice, mIndexBuffer, nullptr);
+        vkFreeMemory(mDevice, mIndexBufferMemory, nullptr);
+
+        vkDestroySemaphore(mDevice, mImageAvailableSemaphore, nullptr);
+        vkDestroySemaphore(mDevice, mRenderFinishedSemaphore, nullptr);
+        vkDestroyFence(mDevice, mInFlightFence, nullptr);
 
         vkDestroyCommandPool(mDevice, mCommandPool, nullptr);
-
-        //for (auto& framebuffer : mSwapChainFramebuffers) {
-        //    vkDestroyFramebuffer(mDevice, framebuffer, nullptr);
-        //}
 
         vkDestroyPipeline(mDevice, mGraphicsPipeline, nullptr);
         vkDestroyPipelineLayout(mDevice, mPipelineLayout, nullptr);
         vkDestroyRenderPass(mDevice, mRenderPass, nullptr);
 
-        //for (auto& imageView : mSwapChainImageViews) {
-        //    vkDestroyImageView(mDevice, imageView, nullptr);
-        //}
-
-        //vkDestroySwapchainKHR(mDevice, mSwapChain, nullptr);
-        
         vkDestroyDevice(mDevice, nullptr);
 
         if (enableValidationLayers)
@@ -237,34 +308,43 @@ private:
     }
 
     void drawFrame() {
-        vkWaitForFences(mDevice, 1, &mInFlightFences[mCurrentFrame], VK_TRUE, UINT64_MAX);
-        vkResetFences(mDevice, 1, &mInFlightFences[mCurrentFrame]);
+        vkWaitForFences(mDevice, 1, &mInFlightFence, VK_TRUE, UINT64_MAX);
+        vkResetFences(mDevice, 1, &mInFlightFence);
 
         uint32_t imageIndex;
-        vkAcquireNextImageKHR(
+        VkResult result = vkAcquireNextImageKHR(
             mDevice,
             mSwapChain,
             UINT64_MAX,
-            mImageAvailableSemaphores[mCurrentFrame],
+            mImageAvailableSemaphore,
             VK_NULL_HANDLE, &imageIndex);
-        vkResetCommandBuffer(mCommandBuffers[mCurrentFrame], 0);
-        recordCommandBuffer(mCommandBuffers[mCurrentFrame], imageIndex);
+
+        if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+            spdlog::debug("{}: vk error out of data khr", __func__);
+            recreateSwapChain();
+            return;
+        } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+            spdlog::error("{}: vkAcquireNextImageKHR", __func__);
+            throw std::runtime_error("failed to acquire swap images");
+        }
+        vkResetCommandBuffer(mCommandBuffer, 0);
+        recordCommandBuffer(mCommandBuffer, imageIndex);
 
         VkSubmitInfo submitInfo{};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-        VkSemaphore waitSemaphores[] = {mImageAvailableSemaphores[mCurrentFrame]};
+        VkSemaphore waitSemaphores[] = {mImageAvailableSemaphore};
         VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
         submitInfo.waitSemaphoreCount = 1;
         submitInfo.pWaitSemaphores = waitSemaphores;
         submitInfo.pWaitDstStageMask = waitStages;
         submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = &mCommandBuffers[mCurrentFrame];
+        submitInfo.pCommandBuffers = &mCommandBuffer;
 
-        VkSemaphore signalSemaphores[] = {mRenderFinishedSemaphores[mCurrentFrame]};
+        VkSemaphore signalSemaphores[] = {mRenderFinishedSemaphore};
         submitInfo.signalSemaphoreCount = 1;
         submitInfo.pSignalSemaphores = signalSemaphores;
-        if (vkQueueSubmit(mGraphicsQueue, 1, &submitInfo, mInFlightFences[mCurrentFrame]) != VK_SUCCESS) {
+        if (vkQueueSubmit(mGraphicsQueue, 1, &submitInfo, mInFlightFence) != VK_SUCCESS) {
             spdlog::error("{} failed to submit draw command buffer", __func__);
             throw std::runtime_error("failed to submit draw command buffer");
         }
@@ -281,10 +361,15 @@ private:
 
         presentInfo.pImageIndices = &imageIndex;
 
-        vkQueuePresentKHR(mPresentQueue, &presentInfo);
-
-        // change current frame
-        mCurrentFrame = (mCurrentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+        result = vkQueuePresentKHR(mPresentQueue, &presentInfo);
+        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || mFrameBufferResized) {
+            spdlog::debug("{}: recreateSwapChain", __func__);
+            mFrameBufferResized = false;
+            recreateSwapChain();
+        } else if (result != VK_SUCCESS) {
+            spdlog::error("{}: vkQeueuPresentKHR error", __func__);
+            throw std::runtime_error("failed to present swap chain image!");
+        }
     }
 
     void createInstance()
@@ -296,7 +381,7 @@ private:
 
         VkApplicationInfo appInfo{};
         appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-        appInfo.pApplicationName = "Frame In Light";
+        appInfo.pApplicationName = "Vertex Input Description";
         appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
         appInfo.pEngineName = "No Engine";
         appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
@@ -474,6 +559,7 @@ private:
     }
 
     void cleanupSwapChain() {
+        spdlog::debug("{}", __func__);
         for (int i = 0; i < mSwapChainFramebuffers.size(); i++) {
             vkDestroyFramebuffer(mDevice, mSwapChainFramebuffers[i], nullptr);
         }
@@ -546,9 +632,25 @@ private:
         }
     }
 
+    uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
+        VkPhysicalDeviceMemoryProperties memProperties;
+        vkGetPhysicalDeviceMemoryProperties(mPhysicalDevice, &memProperties);
+
+        for (int32_t i = 0; i < memProperties.memoryTypeCount; ++i) {
+            if ((typeFilter & (1 << i)) &&
+                ((memProperties.memoryTypes[i].propertyFlags & properties) == properties)) {
+                spdlog::info("{}: return memory type with index {}", __func__, i);
+                return i;
+            }
+        }
+
+        spdlog::error("{}: failed to find suitable memory type", __func__);
+        throw std::runtime_error("failed to find suitable memory type!");
+    }
+
     bool isDeviceSuitable(VkPhysicalDevice pDevice)
     {
-#if 0
+#if 1
         // print device properities and features
         VkPhysicalDeviceProperties deviceProperties;
         VkPhysicalDeviceFeatures deviceFeatures;
@@ -779,7 +881,7 @@ private:
         } else {
             int width, height;
             glfwGetFramebufferSize(mWindow, &width, &height);
-            spdlog::trace("{} glfwGetFrameBufferSize [{}x{}]", __func__, width, height);
+            spdlog::info("{} glfwGetFrameBufferSize [{}x{}]", __func__, width, height);
 
             VkExtent2D actualExtent = {
                 static_cast<uint32_t>(width),
@@ -923,11 +1025,15 @@ private:
         //Vertex state 需要加载顶点数据的时候，使用，这里由于所有的顶点数据写在了 glsl 中，无需指定
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        vertexInputInfo.vertexBindingDescriptionCount = 0;
-        vertexInputInfo.pVertexBindingDescriptions = nullptr;
-        vertexInputInfo.vertexAttributeDescriptionCount = 0;
+
+        VkVertexInputBindingDescription bindDescription = Vertex::getBindingDescription();
+        auto attributeDescription = Vertex::getAttributeDescription();
+
+        vertexInputInfo.vertexBindingDescriptionCount = 1;
+        vertexInputInfo.vertexAttributeDescriptionCount = static_cast<unsigned int>(attributeDescription.size());
+        vertexInputInfo.pVertexBindingDescriptions = &bindDescription;
         // 类似于 opengl 中的 glVertexAttribPointer() 函数的功能？
-        vertexInputInfo.pVertexAttributeDescriptions = nullptr;
+        vertexInputInfo.pVertexAttributeDescriptions = attributeDescription.data();
 
         // input assembly
         VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
@@ -1096,25 +1202,27 @@ private:
     }
 
     void createSyncObjects() {
-        // resize vector size
-        mImageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-        mRenderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-        mInFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
-
         VkSemaphoreCreateInfo semaphoreInfo{};
         semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
         VkFenceCreateInfo fenceInfo{};
         fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
         fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-        for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i) {
-            if (vkCreateSemaphore(mDevice, &semaphoreInfo, nullptr, &mImageAvailableSemaphores[i]) != VK_SUCCESS ||
-                vkCreateSemaphore(mDevice, &semaphoreInfo, nullptr, &mRenderFinishedSemaphores[i]) != VK_SUCCESS ||
-                vkCreateFence(mDevice, &fenceInfo, nullptr, &mInFlightFences[i]) != VK_SUCCESS
-            ) {
-                spdlog::error("{}:{} failed to create synchronization objects", __func__, i);
-                throw std::runtime_error("failed to create synchronization objects!");
-            }
+        if (vkCreateSemaphore(mDevice, &semaphoreInfo,
+            nullptr, &mImageAvailableSemaphore) != VK_SUCCESS) {
+            spdlog::error("{} failed to create image available semaphore", __func__);
+            throw std::runtime_error("failed to create image available semaphore");
+        }
+
+        if (vkCreateSemaphore(mDevice, &semaphoreInfo,
+            nullptr, &mRenderFinishedSemaphore) != VK_SUCCESS) {
+            spdlog::error("{} failed to create render finished semaphore", __func__);
+            throw std::runtime_error("failed to create render finished semaphore");
+        }
+
+        if (vkCreateFence(mDevice, &fenceInfo, nullptr, &mInFlightFence) != VK_SUCCESS) {
+            spdlog::error("{} failed to create fence", __func__);
+            throw std::runtime_error("failed to create fence");
         }
     }
 
@@ -1131,19 +1239,145 @@ private:
         }
     }
 
-    void createCommandBuffers() {
-        mCommandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-
+    void createCommandBuffer() {
         VkCommandBufferAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
         allocInfo.commandPool = mCommandPool;
         allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-        allocInfo.commandBufferCount = static_cast<uint32_t>(mCommandBuffers.size());
+        allocInfo.commandBufferCount = 1;
 
-        if (vkAllocateCommandBuffers(mDevice, &allocInfo, mCommandBuffers.data()) != VK_SUCCESS) {
-            spdlog::error("{} failed to allocate command buffers!", __func__);
-            throw std::runtime_error("failed to allocate command buffers!");
+        if (vkAllocateCommandBuffers(mDevice, &allocInfo, &mCommandBuffer) != VK_SUCCESS) {
+            spdlog::error("{} failed to allocate command buffers", __func__);
+            throw std::runtime_error("failed to allocate command buffers");
         }
+    }
+
+    void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, 
+        VkMemoryPropertyFlags properities, 
+        VkBuffer& buffer, 
+        VkDeviceMemory& bufferMemory) {
+
+        VkBufferCreateInfo bufferInfo{};
+        bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+        bufferInfo.size = size;
+        bufferInfo.usage = usage;
+        // 和 image chains 中的 image 相同，buffers 也可以被一个特定的 queue 占用，也可以在多个
+        // queues 之间进行共享。在这里这个 buffer 只在 graphics queue 中使用
+        bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+        if (vkCreateBuffer(mDevice, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
+            spdlog::error("{}: failed to create buffer!", __func__);
+            throw std::runtime_error("failed to create buffer!");
+        }
+
+        VkMemoryRequirements memRequirements;
+        vkGetBufferMemoryRequirements(mDevice, buffer, &memRequirements);
+        spdlog::debug("{}: memRequirements: {}, {}, {}",
+            __func__,
+            memRequirements.size, 
+            memRequirements.alignment,
+            memRequirements.memoryTypeBits
+        );
+
+        VkMemoryAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+        allocInfo.allocationSize = memRequirements.size;
+        allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properities);
+
+        if (vkAllocateMemory(mDevice, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) {
+            spdlog::error("{}: failed to allocate buffer memory!", __func__);
+            throw std::runtime_error("failed to allocate buffer memory!");
+        }
+
+        vkBindBufferMemory(mDevice, buffer, bufferMemory, 0);
+    }
+
+    void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
+        VkCommandBufferAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        allocInfo.commandPool = mCommandPool;
+        allocInfo.commandBufferCount = 1;
+
+        VkCommandBuffer commandBuffer;
+        vkAllocateCommandBuffers(mDevice, &allocInfo, &commandBuffer);
+
+        VkCommandBufferBeginInfo beginInfo{};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+        vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+        VkBufferCopy copyRegion{};
+        copyRegion.srcOffset = 0;
+        copyRegion.dstOffset = 0;
+        copyRegion.size = size;
+        vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+
+        vkEndCommandBuffer(commandBuffer);
+
+        VkSubmitInfo submitInfo{};
+        submitInfo.sType =  VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = &commandBuffer;
+
+        vkQueueSubmit(mGraphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+        vkQueueWaitIdle(mGraphicsQueue);
+
+        vkFreeCommandBuffers(mDevice, mCommandPool, 1, &commandBuffer);
+    }
+
+    void createVertexBuffer() {
+        VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+            stagingBuffer,
+            stagingBufferMemory
+        );
+
+        void* data;
+        // 将 gpu 专用内存映射到 cpu 可访问内存中来
+        vkMapMemory(mDevice, stagingBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, vertices.data(), static_cast<size_t>(bufferSize));
+        vkUnmapMemory(mDevice, stagingBufferMemory);
+
+        createBuffer(bufferSize,
+            VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            mVertexBuffer,
+            mVertexBufferMemory
+        );
+
+        copyBuffer(stagingBuffer, mVertexBuffer, bufferSize);
+        vkDestroyBuffer(mDevice, stagingBuffer, nullptr);
+        vkFreeMemory(mDevice, stagingBufferMemory, nullptr);
+    }
+
+    void  createIndexBuffer() {
+        VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
+
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        createBuffer(bufferSize, 
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+            stagingBuffer,
+            stagingBufferMemory
+        );
+
+        void* data;
+        vkMapMemory(mDevice, stagingBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, indices.data(), static_cast<size_t>(bufferSize));
+        vkUnmapMemory(mDevice, stagingBufferMemory);
+
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, mIndexBuffer, mIndexBufferMemory);
+
+        copyBuffer(stagingBuffer, mIndexBuffer, bufferSize);
+        vkDestroyBuffer(mDevice, stagingBuffer, nullptr);
+        vkFreeMemory(mDevice, stagingBufferMemory, nullptr);
     }
 
     void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
@@ -1167,7 +1401,7 @@ private:
 #ifndef USE_SELF_DEFINED_CLEAR_COLOR
         VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
 #else
-        VkClearValue clearColor = {{{0.82f, 0.82f, 0.82f, 1.0f}}};
+        VkClearValue clearColor = {{{0.102f, 0.102f, 0.102f, 1.0f}}};
 #endif
         renderPassInfo.clearValueCount = 1;
         renderPassInfo.pClearValues = &clearColor;
@@ -1190,9 +1424,16 @@ private:
         scissor.extent = {mSwapChainExtent.width, mSwapChainExtent.height};
         vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
+        // vertex buffer
+        VkBuffer vertexBuffers[] = {mVertexBuffer};
+        VkDeviceSize offsets[] = {0};
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+        vkCmdBindIndexBuffer(commandBuffer, mIndexBuffer, 0, VK_INDEX_TYPE_UINT16);
+
         // ready to issue the draw command for the triangle
         // three vertices and draw one triangle
-        vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+        //vkCmdDraw(commandBuffer, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
+        vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 
         vkCmdEndRenderPass(commandBuffer);
 
