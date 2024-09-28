@@ -3,6 +3,7 @@ add_requires("spdlog", {system = true})
 
 -- global definations
 add_defines("USE_SELF_DEFINED_CLEAR_COLOR")
+add_defines("BUG_FIXES")
 
 -- debug log print
 if is_mode("debug") then
