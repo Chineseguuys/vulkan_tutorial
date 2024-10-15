@@ -6,6 +6,7 @@ add_requires("spdlog", {system = true})
 add_defines("BUG_FIXES")
 add_defines("EXPLICITLY_TRANSITIONNG_DEPTH_IMAGE")
 add_defines("VERTEX_DEDUPLICATION")
+add_defines("USING_SDL2")
 
 -- debug log print
 if is_mode("debug") then
@@ -26,5 +27,6 @@ target("generating_mipmaps")
     add_files("main.cpp")
     add_includedirs("./thrity_part")
     add_packages("spdlog::spdlog")
+    add_packages("SDL2")
 
-    add_links("glfw", "glad", "pthread", "vulkan")
+    add_links("glfw", "glad", "pthread", "vulkan", "SDL2")

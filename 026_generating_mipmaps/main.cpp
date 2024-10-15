@@ -7,6 +7,11 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+#ifdef USING_SDL2
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_vulkan.h>
+#endif /* USING_SDL2 */
+
 // for transpose
 //  GLM_FORCE_RADIANS定义对于确保像glm::rotate这样的函数使用弧度作为参数, 而不是使用角度作为参数
 #define GLM_FORCE_RADIANS
@@ -229,7 +234,11 @@ public:
     }
 
 private:
+#ifndef USING_SDL2
     GLFWwindow *mWindow;
+#else
+    SDL_Window *mWindow;
+#endif /* USING_SDL2 */
 
     VkInstance mInstance;
     VkDebugUtilsMessengerEXT mDebugMessenger;
@@ -312,6 +321,7 @@ private:
 
     void initWindow()
     {
+#ifndef USING_SDL2
         glfwInit();
 
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -325,6 +335,21 @@ private:
 
         glfwSetWindowUserPointer(mWindow, this);
         glfwSetFramebufferSizeCallback(mWindow, frameBufferResizedCallback);
+#else
+        SDL_Init(SDL_INIT_VIDEO);
+        SDL_Vulkan_LoadLibrary(nullptr);
+
+        mWindow = SDL_CreateWindow("Vulkan",
+            SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+            WIDTH, HEIGHT,
+            SDL_WINDOW_SHOWN | SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE
+        );
+
+        if (mWindow == nullptr) {
+            spdlog::error("{} SDL_CreateWindow failed", __func__);
+            throw std::runtime_error("SDL_CreateWindow failed");
+        }
+#endif
     }
 
     static void frameBufferResizedCallback(GLFWwindow* window, int width, int height) {
@@ -371,20 +396,39 @@ private:
     }
 
     void createSurface() {
+#ifndef USING_SDL2
         if (glfwCreateWindowSurface(mInstance, mWindow, nullptr, &mSurface) != VK_SUCCESS) {
             spdlog::error("{} glfwCreateWindowSurface failed", __func__);
             throw  std::runtime_error("failed to create window surface!");
         }
+#else
+        if (SDL_Vulkan_CreateSurface(mWindow, mInstance, &mSurface) != true) {
+            spdlog::error("{} SDL_Vulkan_CreateSurface return with error {}", __func__, SDL_GetError());
+        }
+#endif /* USING_SDL2 */
     }
 
     void mainLoop()
     {
+#ifndef USING_SDL2
         while (!glfwWindowShouldClose(mWindow))
         {
             glfwPollEvents();
             drawFrame();
         }
-
+#else
+        bool isRunning = true;
+        while (isRunning) {
+            SDL_Event windowEvent;
+            while (SDL_PollEvent(&windowEvent)) {
+                if (windowEvent.type == SDL_QUIT) {
+                    isRunning = false;
+                    break;
+                }
+            }
+            drawFrame();
+        }
+#endif /* USING_SDL2 */
         vkDeviceWaitIdle(mDevice);
     }
 
@@ -448,9 +492,14 @@ private:
 
         vkDestroySurfaceKHR(mInstance, mSurface, nullptr);
         vkDestroyInstance(mInstance, nullptr);
-
+#ifndef USING_SDL2
         glfwDestroyWindow(mWindow);
         glfwTerminate();
+#else
+        SDL_DestroyWindow(mWindow);
+        SDL_Vulkan_UnloadLibrary();
+        SDL_Quit();
+#endif /* USING_SDL2 */
     }
 
     void drawFrame() {
@@ -915,6 +964,7 @@ private:
 
     std::vector<const char *> getRequiredExtensions()
     {
+#ifndef USING_SDL2
         uint32_t glfwExtensionCount = 0;
         const char **glfwExtensions;
         glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
@@ -923,7 +973,19 @@ private:
         for (const char* extension : extensions) {
             spdlog::info("{} glfwExtension: {}", __func__, extension);
         }
-#endif
+#endif /* end if 1 */
+#else
+        uint32_t sdlExtensionCount = 0;
+        const char **sdlExtensions;
+        SDL_Vulkan_GetInstanceExtensions(mWindow, &sdlExtensionCount, nullptr);
+        sdlExtensions = new const char *[sdlExtensionCount];
+        SDL_Vulkan_GetInstanceExtensions(mWindow, &sdlExtensionCount, sdlExtensions);
+        std::vector<const char *> extensions(sdlExtensions, sdlExtensions + sdlExtensionCount);
+
+        for (const char* extension : extensions) {
+            spdlog::info("{} sdl need extension: {}", __func__, extension);
+        }
+#endif /* USING_SDL2 */
         if (enableValidationLayers)
         {
             // 要在程序中设置一个回调来处理消息和相关细节，我们必须使用 VK_EXT_debug_utils 扩展设置一个带有回调的调试
@@ -1054,9 +1116,13 @@ private:
             return capabilities.currentExtent;
         } else {
             int width, height;
+#ifndef USING_SDL2
             glfwGetFramebufferSize(mWindow, &width, &height);
             spdlog::info("{} glfwGetFrameBufferSize [{}x{}]", __func__, width, height);
-
+#else
+            SDL_GetWindowSize(mWindow, &width, &height);
+            spdlog::trace("{} sdl2 get window size [{}x{}]", __func__, width, height);
+#endif /* USING_SDL2 */
             VkExtent2D actualExtent = {
                 static_cast<uint32_t>(width),
                 static_cast<uint32_t>(height)

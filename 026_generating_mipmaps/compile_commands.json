@@ -1,0 +1,11 @@
+{
+    arch = "x86_64",
+    buildir = "build",
+    ccache = true,
+    debugger = "lldb",
+    host = "linux",
+    kind = "static",
+    mode = "debug",
+    ndk_stdcxx = true,
+    plat = "linux"
+}

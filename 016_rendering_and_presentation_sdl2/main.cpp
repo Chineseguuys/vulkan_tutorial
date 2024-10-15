@@ -9,6 +9,7 @@
 
 #ifdef USING_SDL2
 // for sdl2
+// https://github.com/AndreVallestero/sdl-vulkan-tutorial/tree/master
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
 #endif /* USING_SDL2 */
