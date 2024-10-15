@@ -337,6 +337,13 @@ private:
         glfwSetFramebufferSizeCallback(mWindow, frameBufferResizedCallback);
 #else
         SDL_Init(SDL_INIT_VIDEO);
+#ifdef FORCE_USING_X11_IN_SDL2
+        // 无法从 RenderDoc 中启动该应用程序，RenderDoc 目前不支持从 wayland 上启动进程
+        // 设置环境变量为 x11, 依然无法正常启动
+        setenv("SDL_VIDEODRIVER", "x11", 1);
+        spdlog::info("{} set SDL_VIDEODRIVER to X11", __func__);
+        SDL_SetHint(SDL_HINT_VIDEODRIVER, "x11");
+#endif /* FORCE_USING_X11_IN_SDL2 */
         SDL_Vulkan_LoadLibrary(nullptr);
 
         mWindow = SDL_CreateWindow("Vulkan",

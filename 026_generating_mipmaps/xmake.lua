@@ -7,6 +7,7 @@ add_defines("BUG_FIXES")
 add_defines("EXPLICITLY_TRANSITIONNG_DEPTH_IMAGE")
 add_defines("VERTEX_DEDUPLICATION")
 add_defines("USING_SDL2")
+add_defines("FORCE_USING_X11_IN_SDL2")
 
 -- debug log print
 if is_mode("debug") then
