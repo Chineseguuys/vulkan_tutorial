@@ -656,6 +656,8 @@ private:
         VkPhysicalDeviceFeatures deviceFeatures{};
         // 如果要使用各项异性过滤，需要手动的去请求它
         deviceFeatures.samplerAnisotropy = VK_TRUE;
+        // enable sample shading feature for the device
+        deviceFeatures.sampleRateShading = VK_TRUE;
         VkDeviceCreateInfo createInfo{};    // Logical Device Create Info
 
         createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -1243,8 +1245,10 @@ private:
         // 渲染通道之外
         dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
         dependency.dstSubpass = 0;
+        // 即渲染通道外部的颜色附件输出或早期片段测试完成后，目标子通道才能继续进行
         dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
             VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+        // 在深度或模板附件完成写操作之前，目标子通道不能开始运行
         dependency.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
         dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
             VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
@@ -1362,6 +1366,11 @@ private:
         multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
         multisampling.sampleShadingEnable = VK_FALSE;
         multisampling.rasterizationSamples = mMSAASamples;
+        // 启用 采样着色，这意味着每个采样点会被单独着色，而不仅仅是使用像素的统一颜色。
+        // 这对多重采样抗锯齿（MSAA）是一个增强，使得每个采样点有更精细的颜色计算，从而提高图像的质量，尤其是在片段边缘
+        multisampling.sampleShadingEnable = VK_TRUE;
+        // 有多少比例的采样点必须被单独着色
+        multisampling.minSampleShading = .2f;
         //multisampling.minSampleShading = 1.0f;
         //multisampling.pSampleMask = nullptr;
         //multisampling.alphaToCoverageEnable = VK_FALSE;

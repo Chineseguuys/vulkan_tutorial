@@ -223,8 +223,6 @@ vkCreateFramebuffer(device, &framebufferInfo, nullptr, &framebuffer);
 
 # Resolve
 
-
-
 > "Once a multisampled buffer is created, it has to be resolved to the default framebuffer (which stores only a single sample per pixel)."
 
 其中的 **"resolved"**（解析或解决）一词在图形编程，尤其是在 Vulkan 或 OpenGL 中，有特定的含义。下面详细解释 **"resolved"** 在此上下文中的含义及其代表的操作。
@@ -319,3 +317,38 @@ vkCmdResolveImage(
 ## **总结**
 
 在 Vulkan 中，**"resolved"** 指的是将多重采样缓冲区中的多个采样点合并为单一采样的过程。这一操作通过解析（resolve）实现，使得多重采样渲染的高质量图像能够正确显示在默认的单一采样帧缓冲区中。解析操作不仅是多重采样渲染流程中的关键步骤，也是确保最终图像质量与显示设备兼容的重要环节。
+
+# 采样着色(Sample Shading)
+
+在 `VkPipelineMultisampleStateCreateInfo` 结构体中，您设置了两个参数：
+
+1. **`multisampling.sampleShadingEnable = VK_TRUE;`**
+2. **`multisampling.minSampleShading = .2f;`**
+
+这两个参数与 **多重采样抗锯齿**（MSAA，Multisample Anti-Aliasing）和 **采样着色**（Sample Shading）相关联，主要用于提高图像质量，减少渲染中的锯齿效应。下面逐一解释这两个参数的作用。
+
+### 1. `sampleShadingEnable = VK_TRUE`
+
+- **`sampleShadingEnable`** 是一个布尔值，用于启用或禁用 **采样着色**（Sample Shading）。
+- 当 `sampleShadingEnable = VK_TRUE` 时，启用 **采样着色**，这意味着每个采样点会被单独着色，而不仅仅是使用像素的统一颜色。这对多重采样抗锯齿（MSAA）是一个增强，使得每个采样点有更精细的颜色计算，从而提高图像的质量，尤其是在片段边缘。
+
+**采样着色**可以带来更好的抗锯齿效果，因为它使得多重采样不仅仅用于几何边界，还能根据每个采样点的不同计算颜色值，从而获得更平滑的过渡和细节。
+
+### 2. `minSampleShading = .2f`
+
+- **`minSampleShading`** 控制最小采样着色比例的浮点值，范围是 0.0 到 1.0。
+- 当 `sampleShadingEnable = VK_TRUE` 时，这个值决定了至少有多少比例的采样点必须被单独着色。
+
+    - **`minSampleShading = 1.0f`** 表示 **每个采样点** 都会被单独着色。
+    - **`minSampleShading = 0.0f`** 表示关闭采样着色，回退到标准的多重采样。
+    - **`minSampleShading = 0.2f`** 表示至少 20% 的采样点会被单独着色，而不是所有的采样点。
+
+因此，`minSampleShading = .2f` 表示，即使开启了采样着色，只有大约 **20%** 的采样点会被单独计算颜色值，而其他采样点可能会共享同样的颜色计算结果。这种设置可以在图像质量和性能之间找到一个平衡：既提升了一定的抗锯齿效果，又不会因为计算所有采样点的颜色而导致性能开销过大。
+
+### **整体作用**
+
+- `sampleShadingEnable = VK_TRUE` 启用了 **采样着色**，使每个采样点有机会计算不同的颜色值，从而提高抗锯齿效果。
+- `minSampleShading = .2f` 设置了 **最小采样着色比例**，在这种情况下，保证至少 **20%** 的采样点会被独立着色，这能提升图像质量，同时减少性能消耗。
+
+这种配置通常用于对图像质量要求较高但又需要保持一定性能的场景。
+
