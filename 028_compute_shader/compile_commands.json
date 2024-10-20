@@ -1,0 +1,6 @@
+[
+{
+  "directory": "/home/yanjiangha/mirrors/sda1_doc/code/vulkan_turial/028_compute_shader",
+  "arguments": ["/usr/bin/gcc", "-c", "-m64", "-O0", "-Ithrity_part", "-DBUG_FIXES", "-DEXPLICITLY_TRANSITIONNG_DEPTH_IMAGE", "-DVERTEX_DEDUPLICATION", "-DFORCE_USING_X11_IN_SDL2", "-DLOG_DEBUG", "-DDEBUG", "-g", "-o", "build/.objs/multisampling/linux/x86_64/debug/main.cpp.o", "main.cpp"],
+  "file": "main.cpp"
+}]
