@@ -612,7 +612,7 @@ private:
         presentInfo.swapchainCount = 1;
         presentInfo.pSwapchains = swapChains;
         presentInfo.pImageIndices = &imageIndex;
-        
+
         result = vkQueuePresentKHR(mPresentQueue, &presentInfo);
 
         if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || mFrameBufferResized) {
@@ -1199,7 +1199,7 @@ private:
         colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
         // attachments 在 render pass 结束后的 layout
         // 由于多采样的图像不能直接呈现，首先需要转化为常规的图像
-        colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
         // subpasses and attachment reference
         VkAttachmentReference colorAttachmentRef{};
@@ -1221,7 +1221,7 @@ private:
         dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
         dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
-        // we have color attachment and depth attachment
+        // we have color attachment only
         std::array<VkAttachmentDescription, 1> attachments = {colorAttachment};
 
         VkRenderPassCreateInfo renderPassInfo{};
@@ -1440,7 +1440,7 @@ private:
     void createFrameBuffers() {
         mSwapChainFramebuffers.resize(mSwapChainImageViews.size());
         for (unsigned int i = 0; i < mSwapChainImageViews.size(); ++i) {
-            std::array<VkImageView, 3> attachments = {
+            std::array<VkImageView, 1> attachments = {
                 mSwapChainImageViews[i],
             };
 
