@@ -208,9 +208,9 @@ struct UniformBufferObject {
 };
 
 struct Particle {
-    glm::vec2 mPosition;
-    glm::vec2 mVelocity;
-    glm::vec4 mColor;
+    glm::vec2 mPosition;    // 粒子的位置
+    glm::vec2 mVelocity;    // 粒子的速度
+    glm::vec4 mColor;       // 粒子的颜色
 
     static VkVertexInputBindingDescription getBindingDescription() {
         VkVertexInputBindingDescription bindingDescription;
