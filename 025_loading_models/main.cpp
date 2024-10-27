@@ -48,6 +48,7 @@ struct Vertex {
     glm::vec3 mPos;
     glm::vec3 mColor;
     glm::vec2 mTexCoord;
+    glm::vec3 mNormals;
 
     // 对于希望在 std::unordered_map 中使用的类，需要提供一个 operator==() function 来判断两个实例是否相同
     bool operator==(const Vertex& other) const {
@@ -71,8 +72,8 @@ struct Vertex {
         return bindingDescription;
     }
 
-    static std::array<VkVertexInputAttributeDescription, 3> getAttributeDescription() {
-        std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions{};
+    static std::array<VkVertexInputAttributeDescription, 4> getAttributeDescription() {
+        std::array<VkVertexInputAttributeDescription, 4> attributeDescriptions{};
 
         attributeDescriptions[0].binding = 0;
         attributeDescriptions[0].location = 0;
@@ -88,6 +89,11 @@ struct Vertex {
         attributeDescriptions[2].location = 2;
         attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
         attributeDescriptions[2].offset = offsetof(Vertex, mTexCoord);
+
+        attributeDescriptions[3].binding = 0;
+        attributeDescriptions[3].location = 3;
+        attributeDescriptions[3].format = VK_FORMAT_R32G32B32_SFLOAT;
+        attributeDescriptions[3].offset = offsetof(Vertex, mNormals);
 
         return attributeDescriptions;
     }
@@ -1195,7 +1201,8 @@ private:
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
         VkVertexInputBindingDescription bindDescription = Vertex::getBindingDescription();
-        std::array<VkVertexInputAttributeDescription, 3> attributeDescription = Vertex::getAttributeDescription();
+        // 4: position, color, texcoord, normal
+        std::array<VkVertexInputAttributeDescription, 4> attributeDescription = Vertex::getAttributeDescription();
 
         vertexInputInfo.vertexBindingDescriptionCount = 1;
         vertexInputInfo.vertexAttributeDescriptionCount = static_cast<unsigned int>(attributeDescription.size());
@@ -2180,6 +2187,12 @@ private:
                     attrib.vertices[3 * index.vertex_index + 0],
                     attrib.vertices[3 * index.vertex_index + 1],
                     attrib.vertices[3 * index.vertex_index + 2]
+                };
+                // normals 法线向量
+                vertex.mNormals = {
+                    attrib.normals[3 * index.normal_index + 0],
+                    attrib.normals[3 * index.normal_index + 1],
+                    attrib.normals[3 * index.normal_index + 2]
                 };
 
                 vertex.mTexCoord = {

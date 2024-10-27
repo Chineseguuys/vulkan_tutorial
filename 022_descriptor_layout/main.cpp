@@ -32,7 +32,7 @@
 
 struct Vertex {
     glm::vec2 mPos;
-    glm::vec3 mColor;
+    glm::vec4 mColor;
 
     static VkVertexInputBindingDescription getBindingDescription() {
         VkVertexInputBindingDescription bindingDescription{};
@@ -61,7 +61,7 @@ struct Vertex {
 
         attributeDescriptions[1].binding = 0;
         attributeDescriptions[1].location = 1;
-        attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;   // for vec3
+        attributeDescriptions[1].format = VK_FORMAT_R32G32B32A32_SFLOAT;   // for vec3
         attributeDescriptions[1].offset = offsetof(Vertex, mColor);
 
         return attributeDescriptions;
@@ -76,10 +76,10 @@ struct UniformBufferObject {
 
 const std::vector<Vertex> vertices = {
     // pos , color
-    {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-    {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-    {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-    {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+    {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f, 1.0f}},
+    {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f, 1.0f}},
+    {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f, 1.0f}},
+    {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f, 1.0f}}
 };
 
 const std::vector<uint16_t> indices = {
@@ -1460,7 +1460,11 @@ private:
             // 我们在创建后立即使用vkMapMemory映射缓冲区，以获取稍后可以写入数据的指针。
             // 在应用程序的整个生命周期中，缓冲区始终映射到该指针。该技术称为“持久映射” ，适用于所有 Vulkan 实现。
             // 不必每次需要更新缓冲区时都映射缓冲区，从而提高性能，因为映射是有开销的
-            vkMapMemory(mDevice, mUniformBuffersMemory[i], 0, bufferSize, 0, &mUniformBuffersMapped[i]);
+            if (vkMapMemory(mDevice, mUniformBuffersMemory[i],
+                0, bufferSize, 0, &mUniformBuffersMapped[i]) != VK_SUCCESS) {
+                spdlog::error("{} [{}] failed to map uniform buffer memory to local!", __func__, i);
+                throw std::runtime_error("failed to map uniform buffer memory to local!");
+            }
         }
     }
 
@@ -1546,7 +1550,6 @@ private:
 
     void createDescriptorSetLayout() {
         VkDescriptorSetLayoutBinding uboLayoutBinding{};
-        // 对应 vertex shader 中的 layout(binding = 0) uniform UniformBufferObject
         uboLayoutBinding.binding = 0;
         uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         uboLayoutBinding.descriptorCount = 1;
