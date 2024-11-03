@@ -45,6 +45,22 @@ int main(int argc, char* argv[]) {
         spdlog::info("Material name: {}", material.name);
         spdlog::info("  ambient texname: {}", material.ambient_texname);
         spdlog::info("  diffuse texname: {}", material.diffuse_texname);
+        spdlog::info("      sharpness: {}", material.diffuse_texopt.sharpness);
+        spdlog::info("      brightness: {}", material.diffuse_texopt.brightness);
+        spdlog::info("      contrast: {}", material.diffuse_texopt.contrast);
+        spdlog::info("      origin offset: [{}, {}, {}]",
+            material.diffuse_texopt.origin_offset[0],
+            material.diffuse_texopt.origin_offset[1],
+            material.diffuse_texopt.origin_offset[2]
+        );
+        spdlog::info("      scale: [{}, {}, {}]", material.diffuse_texopt.scale[0],
+            material.diffuse_texopt.scale[1],
+            material.diffuse_texopt.scale[2]
+        );
+        spdlog::info("      turbulence: [{}, {}, {}]", material.diffuse_texopt.turbulence[0],
+            material.diffuse_texopt.turbulence[0],
+            material.diffuse_texopt.turbulence[0]
+        );
         spdlog::info("  specular texname: {}", material.specular_texname);
         spdlog::info("  specular highlight texname: {}", material.specular_highlight_texname);
         spdlog::info("  bump texname: {}", material.bump_texname);
@@ -55,7 +71,32 @@ int main(int argc, char* argv[]) {
 
     for (const auto& shape : shapes) {
         spdlog::info("Shape name: {}", shape.name);
+        spdlog::info("  for mesh: ");
+        spdlog::info("      vertices indices size: {}", shape.mesh.indices.size());
+        spdlog::info("      face vertices: {} [{}, {} ...]", shape.mesh.num_face_vertices.size(),
+            shape.mesh.num_face_vertices[0], shape.mesh.num_face_vertices[1]
+        );
+        spdlog::info("      merticals id size: {} [{}, {} ...]", shape.mesh.material_ids.size(),
+            shape.mesh.material_ids[0],
+            shape.mesh.material_ids[1]
+        );
+
+        spdlog::info("  for line: ");
+        spdlog::info("      vertices indices size: {}", shape.lines.indices.size());
+        spdlog::info("      points vertices: {}", shape.lines.num_line_vertices.size());
+
+        spdlog::info("  for point: ");
+        spdlog::info("      vertices indices size: {}", shape.points.indices.size());
     }
+
+    spdlog::info("Attribute: ");
+    spdlog::info("  vertices size: {}", attrib.vertices.size());
+    spdlog::info("  vertices weights size: {}", attrib.vertex_weights.size());
+    spdlog::info("  normals size: {}", attrib.normals.size());
+    spdlog::info("  texcoords size: {}", attrib.texcoords.size());
+    spdlog::info("  texcoord_ws size: {}", attrib.texcoord_ws.size());
+    spdlog::info("  colors size: {}", attrib.colors.size());
+    spdlog::info("  skin_weights size: {}", attrib.skin_weights.size());
 
     return 0;
 }

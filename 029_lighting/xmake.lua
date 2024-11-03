@@ -23,10 +23,25 @@ if is_mode("debug") then
     add_ldflags("-g")
 end
 
+target("shape")
+    set_kind("static")
+    add_files("./ops/Shape.cpp")
+    add_files("./ops/Vertex.cpp")
+
+-- target 1
 target("loading_models")
+    set_kind("binary")
+    add_files("main.cpp")
+    add_includedirs("./thrity_part")
+    add_packages("spdlog::spdlog")
+
+    add_links("glfw", "glad", "pthread", "vulkan")
+
+-- target 2
+target("tiny_demo")
     set_kind("binary")
     add_files("tinyobj_demo.cpp")
     add_includedirs("./thrity_part")
     add_packages("spdlog::spdlog")
 
-    add_links("glfw", "glad", "pthread", "vulkan")
+    add_links("vulkan", "glfw", "glad", "pthread")
