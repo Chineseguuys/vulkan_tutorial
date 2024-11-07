@@ -142,7 +142,8 @@ const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;
 
 // https://skfb.ly/VAKF
-const std::string MODEL_PATH = "./models/viking_room.obj";
+const std::string MODEL_PATH = "./models/final.obj";
+const std::string MTL_PATH   = "./models/final.mtl";
 const std::string TEXTURE_PATH = "./textures/viking_room.png";
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
@@ -1646,7 +1647,7 @@ private:
             glm::vec3(0.0f, 0.0f, 0.0f), // center
             glm::vec3(0.0f, 0.0f, 1.0f)  // up
         );
-        ubo.mProj = glm::perspective(glm::radians(45.0f),
+        ubo.mProj = glm::perspective(glm::radians(90.0f),
             mSwapChainExtent.width / static_cast<float>(mSwapChainExtent.height),
             0.1f,
             10.0f
@@ -2148,15 +2149,24 @@ private:
     }
 
     void loadModel() {
-        tinyobj::attrib_t attrib;
-        std::vector<tinyobj::shape_t> shapes;
-        std::vector<tinyobj::material_t> materials;
-        std::string warn, err;
+        tinyobj::ObjReaderConfig readerConfig;
+        readerConfig.mtl_search_path = "./models/";
 
-        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, MODEL_PATH.c_str())) {
-            spdlog::error("{} {}", __func__, warn + err);
-            throw std::runtime_error(warn + err);
+        tinyobj::ObjReader objReaderInstance;
+        if (!objReaderInstance.ParseFromFile(MODEL_PATH, readerConfig)) {
+            if (!objReaderInstance.Error().empty()) {
+                spdlog::error("Error: {}", objReaderInstance.Error());
+            }
+            return;
         }
+
+        if (!objReaderInstance.Warning().empty()) {
+            spdlog::warn("Warning: {}", objReaderInstance.Warning());
+        }
+
+        const tinyobj::attrib_t &attrib = objReaderInstance.GetAttrib();
+        const std::vector<tinyobj::shape_t> &shapes = objReaderInstance.GetShapes();
+        const std::vector<tinyobj::material_t> &materials = objReaderInstance.GetMaterials();
 
 #ifdef VERTEX_DEDUPLICATION
         // 顶点中有大量的重复，可以对顶点进行除重

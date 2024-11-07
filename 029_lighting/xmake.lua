@@ -4,7 +4,7 @@ add_requires("spdlog", {system = true})
 set_toolchains("gcc")
 
 -- global definations
--- add_defines("USE_SELF_DEFINED_CLEAR_COLOR")
+add_defines("USE_SELF_DEFINED_CLEAR_COLOR")
 add_defines("BUG_FIXES")
 add_defines("EXPLICITLY_TRANSITIONNG_DEPTH_IMAGE")
 add_defines("VERTEX_DEDUPLICATION")
@@ -23,13 +23,8 @@ if is_mode("debug") then
     add_ldflags("-g")
 end
 
-target("shape")
-    set_kind("static")
-    add_files("./ops/Shape.cpp")
-    add_files("./ops/Vertex.cpp")
-
 -- target 1
-target("loading_models")
+target("lighting")
     set_kind("binary")
     add_files("main.cpp")
     add_includedirs("./thrity_part")
