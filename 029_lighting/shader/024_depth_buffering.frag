@@ -6,8 +6,13 @@ layout(location = 2) in vec3 fragNormals;
 
 layout(location = 0) out vec4 outColor;
 
-layout(binding = 1) uniform sampler2D texSampler;
+// 纹理数组？
+layout(binding = 1) uniform sampler2D texSampler[3];
+// 选择哪一个纹理？
+layout(binding = 2) uniform UBOIndex {
+    int u_samplerIndex;
+} selectSampler;
 
 void main() {
-    outColor = vec4(1.0, 0.0, 0.0, 1.0);
+    outColor = vec4(0.6, 0.6, 0.6, 1.0);
 }

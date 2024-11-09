@@ -117,26 +117,10 @@ struct UniformBufferObject {
     glm::mat4 mProj;
 };
 
-// 废弃
-/*
-const std::vector<Vertex> vertices = {
-    // pos , color, texcoord
-    {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-    {{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-    {{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-    {{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
-
-    {{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-    {{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-    {{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-    {{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}
+// 用来更新选择纹理
+struct UBOIndex {
+    int u_samplerIndex;
 };
-
-const std::vector<uint32_t> indices = {
-    0, 1, 2, 2, 3, 0,
-    4, 5, 6, 6, 7, 4
-};
-*/
 
 const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;
@@ -284,10 +268,17 @@ private:
     VkBuffer mIndexBuffer;
     VkDeviceMemory mIndexBufferMemory;
 
-    // uniform buffer
-    std::vector<VkBuffer> mUniformBuffers;
-    std::vector<VkDeviceMemory> mUniformBuffersMemory;
-    std::vector<void*> mUniformBuffersMapped;
+    // uniform buffer UniformBufferObject
+    // Todo: 这个需要改名字
+    std::vector<VkBuffer> mUniformBuffers;  // 在 cpu 侧的句柄
+    std::vector<VkDeviceMemory> mUniformBuffersMemory;  // 实际要分配的 gpu 内存
+    std::vector<void*> mUniformBuffersMapped;   // gpu 内存在cpu 侧的 map
+
+    // uniform buffer UBOIndex
+    // 这个用来选择纹理的下标
+    std::vector<VkBuffer> mUBOIndexBuffers;
+    std::vector<VkDeviceMemory> mUBOIndexBuffersMemory;
+    std::vector<void*> mUBOIndexBuffersMapped;
 
     // descriptor pool
     VkDescriptorPool mDescriptorPool;
@@ -311,10 +302,22 @@ private:
     VkImageView mTextureImageView;
     VkSampler mTextureSampler;
 
+    // 我们要同时使用多个纹理图片
+    // 我们需要一个从纹理的名称到其下标的映射
+    std::unordered_map<std::string, int> mTexName2IndexMap;
+    std::vector<VkImage> mTextureImages;
+    std::vector<VkDeviceMemory> mTextureImagesMemory;
+    std::vector<VkImageView> mTextureImagesView;
+    // 我们对于多个纹理，可以使用同一个 sampler?
+    // Todo: 能否只使用一个 sampler
+
     // depth image
     VkImage mDepthImage;
     VkDeviceMemory mDepthImageMemory;
     VkImageView mDepthImageView;
+
+    // tiny obj instance
+    tinyobj::ObjReader mObjReaderInstance;
 
     void initWindow()
     {
@@ -341,6 +344,9 @@ private:
 
     void initVulkan()
     {
+        // load model obj
+        loadModel();
+
         createInstance();
         setupDebugMessenger();
         createSurface();
@@ -358,12 +364,14 @@ private:
         // move create frame buffers after create depth resources
         createFrameBuffers();
         // generate the texture image
-        createTextureImage();
-        createTextureImageView();
+        createTextureImages();
+        // Todo: 这里需要重新修改
+        //createTextureImage();
+        // Todo: 这里需要重新修改
+        //createTextureImageView();
+        // Todo: 这里需要重新的修改
         // creata image sampler
         createTextureSampler();
-        // load model obj
-        loadModel();
         // create vertex buffer and map it to gpu mem after create Command pool
         createVertexBuffer();
         createIndexBuffer();
@@ -1544,6 +1552,7 @@ private:
     }
 
     void createUniformBuffers() {
+        // 坐标变换矩阵
         VkDeviceSize bufferSize = sizeof(UniformBufferObject);
 
         mUniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
@@ -1560,6 +1569,22 @@ private:
             // 在应用程序的整个生命周期中，缓冲区始终映射到该指针。该技术称为“持久映射” ，适用于所有 Vulkan 实现。
             // 不必每次需要更新缓冲区时都映射缓冲区，从而提高性能，因为映射是有开销的
             vkMapMemory(mDevice, mUniformBuffersMemory[i], 0, bufferSize, 0, &mUniformBuffersMapped[i]);
+        }
+
+        // 纹理下标选择
+        bufferSize = sizeof(UBOIndex);
+        mUBOIndexBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+        mUBOIndexBuffersMemory.resize(MAX_FRAMES_IN_FLIGHT);
+        mUBOIndexBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
+
+        for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+            createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                mUBOIndexBuffers[i], mUBOIndexBuffersMemory[i]
+            );
+
+            // 映射内存
+            vkMapMemory(mDevice, mUBOIndexBuffersMemory[i], 0, bufferSize, 0, &mUBOIndexBuffersMapped[i]);
         }
     }
 
@@ -1583,6 +1608,7 @@ private:
     }
 
     void createDescriptorSets() {
+        // 现在我们有三个 Descriptor 需要做分配
         std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, mDescriptorSetLayout);
         VkDescriptorSetAllocateInfo allocInfo{};  
         allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -1598,11 +1624,19 @@ private:
 
         // 现在描述符集已分配完毕，但其中的描述符仍需要配置。我们现在将添加一个循环来填充每个描述符
         for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i) {
+            // 视角
             VkDescriptorBufferInfo bufferInfo{};
             bufferInfo.buffer = mUniformBuffers[i];
             bufferInfo.offset = 0;
             bufferInfo.range = sizeof(UniformBufferObject);
 
+            // 纹理选择
+            VkDescriptorBufferInfo uboIndexBufferInfo{};
+            uboIndexBufferInfo.buffer = mUBOIndexBuffers[i];
+            uboIndexBufferInfo.offset = 0;
+            uboIndexBufferInfo.range = sizeof(UBOIndex);
+
+            // Todo: 对于创建了纹理数组的情况下，如何设置 Descriptor
             VkDescriptorImageInfo imageInfo{};
             imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
             imageInfo.imageView = mTextureImageView;
@@ -1641,9 +1675,10 @@ private:
         float timeDiff = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
         UniformBufferObject ubo{};
-        ubo.mModel = glm::rotate(glm::mat4(1.0f), timeDiff * glm::radians(22.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+        ubo.mModel = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        //ubo.mModel = glm::rotate(ubo.mModel, timeDiff * glm::radians(22.0f), glm::vec3(0.0f, 0.0f, 1.0f));
         ubo.mView = glm::lookAt(
-            glm::vec3(2.0f, 2.0f, 2.0f), // eyes
+            glm::vec3(10.0f, 0.0f, 0.0f), // eyes
             glm::vec3(0.0f, 0.0f, 0.0f), // center
             glm::vec3(0.0f, 0.0f, 1.0f)  // up
         );
@@ -1655,7 +1690,7 @@ private:
         // GLM最初是为OpenGL设计的，其中剪辑坐标的Y坐标是倒置的。
         // 补偿这一问题的最简单方法是翻转投影矩阵中 Y 轴缩放因子的符号。
         // 如果不这样做，则图像将呈现颠倒状态
-        ubo.mProj[1][1] *= -1;
+        ubo.mProj[1][1] *= -1;  // Y
 
         // 将更新之后的 ubo 写入到映射的内存中
         memcpy(mUniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
@@ -1672,12 +1707,20 @@ private:
         uboLayoutBinding.pImmutableSamplers = nullptr; //optional
 
         // sampler layout binding
+        // 对应 fragment shader 中的 layout(binding = 1) uniform sampler2D texSampler[3];
         VkDescriptorSetLayoutBinding samplerLayoutBinding{};
         samplerLayoutBinding.binding = 1;
-        samplerLayoutBinding.descriptorCount = 1;
+        samplerLayoutBinding.descriptorCount = 3;   // 现在需要存储三个纹理，这里设置为 3
         samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         samplerLayoutBinding.pImmutableSamplers = nullptr;
         samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+        // 通过 index 去选择特定的 texture sampler
+        VkDescriptorSetLayoutBinding samplerIndexLayoutBinding{};
+        samplerIndexLayoutBinding.binding = 2;
+        samplerIndexLayoutBinding.descriptorCount = 1;
+        samplerIndexLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        samplerIndexLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
         std::array<VkDescriptorSetLayoutBinding, 2> bindings = {uboLayoutBinding, samplerLayoutBinding};
         // 所有的描述符的绑定，都需要组合到一个 VkDescriptorSetLayout 对象上面
@@ -1782,11 +1825,39 @@ private:
         return shaderModule;
     }
 
-    void createTextureImage() {
+    // Todo: 根据解析的模型中的materials 来创建所有的纹理
+    void createTextureImages() {
+        const std::vector<tinyobj::material_t>& materials = mObjReaderInstance.GetMaterials();
+        // 先只考虑漫反射的纹理，diffuse
+        int index = 0;
+        for (auto& material : materials) {
+            std::string materialName = material.name;
+            std::string diffuseTexName = material.diffuse_texname;
+            if (!diffuseTexName.empty()) {
+                // Todo: 加载纹理
+                VkImage vkImage;
+                VkDeviceMemory vkImageMemory;
+                VkImageView vkImageView;
+                createTextureImage(diffuseTexName, vkImage, vkImageMemory);
+                mTextureImages.push_back(vkImage);
+                mTextureImagesMemory.push_back(vkImageMemory);
+                mTexName2IndexMap.insert(std::pair<std::string, int>(diffuseTexName, index++));
+                vkImageView = createTextureImageView(vkImage);
+                mTextureImagesView.push_back(vkImageView);
+            }
+        }
+    }
+
+    void createTextureImage(const std::string texturePath, VkImage& vkImage, VkDeviceMemory& vkImageMemory) {
         int texWidth, texHeight, texChannels;
-        spdlog::info("{} load image file {}", __func__, TEXTURE_PATH.c_str());
-        stbi_uc* pixels = stbi_load(TEXTURE_PATH.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+        stbi_uc* pixels = stbi_load(texturePath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
         VkDeviceSize imageSize = texWidth * texHeight * 4;
+        spdlog::info("{} load image file {}, dims = [{}x{}], size = {}",
+            __func__,
+            TEXTURE_PATH.c_str(),
+            texWidth, texHeight,
+            imageSize
+        );
 
         if (!pixels) {
             spdlog::debug("{} failed to load texture image!", __func__);
@@ -1811,32 +1882,32 @@ private:
         createImage(texWidth, texHeight,
             VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
             VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, mTextureImage, mTextureImageMemory
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vkImage, vkImageMemory
         );
 #else
         // VUID-VkImageViewCreateInfo-None-02273
         createImage(texWidth, texHeight,
             VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_LINEAR,
             VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, mTextureImage, mTextureImageMemory
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vkImage, vkImageMemory
         );
 #endif /* BUG_FIXES */
         // 该图像是使用VK_IMAGE_LAYOUT_UNDEFINED布局创建的，因此在转换textureImage时应将其指定为旧布局。
         // 请记住，我们可以这样做，因为在执行复制操作之前我们不关心其内容
         // 未定义 → 传输目的地
-        transitionImageLayout(mTextureImage,
+        transitionImageLayout(vkImage,
             VK_FORMAT_R8G8B8A8_SRGB,
             VK_IMAGE_LAYOUT_UNDEFINED,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
         );
         // 从临时的 buffer 拷贝到 VkImage 中
         copyBufferToImage(stagingBuffer,
-            mTextureImage,
+            vkImage,
             static_cast<uint32_t>(texWidth),
             static_cast<uint32_t>(texHeight)
         );
         // 传输目的地→着色器读取
-        transitionImageLayout(mTextureImage,
+        transitionImageLayout(vkImage,
             VK_FORMAT_R8G8B8A8_SRGB,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
@@ -1846,8 +1917,8 @@ private:
         vkFreeMemory(mDevice, stagingBufferMemory, nullptr);
     }
 
-    void createTextureImageView() {
-        mTextureImageView = createImageView(mTextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
+    VkImageView createTextureImageView(const VkImage& vkImage) {
+        return createImageView(mTextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
     }
 
     void createTextureSampler() {
@@ -2152,21 +2223,21 @@ private:
         tinyobj::ObjReaderConfig readerConfig;
         readerConfig.mtl_search_path = "./models/";
 
-        tinyobj::ObjReader objReaderInstance;
-        if (!objReaderInstance.ParseFromFile(MODEL_PATH, readerConfig)) {
-            if (!objReaderInstance.Error().empty()) {
-                spdlog::error("Error: {}", objReaderInstance.Error());
+        if (!mObjReaderInstance.ParseFromFile(MODEL_PATH, readerConfig)) {
+            if (!mObjReaderInstance.Error().empty()) {
+                spdlog::error("Error: {}", mObjReaderInstance.Error());
             }
             return;
         }
 
-        if (!objReaderInstance.Warning().empty()) {
-            spdlog::warn("Warning: {}", objReaderInstance.Warning());
+        if (!mObjReaderInstance.Warning().empty()) {
+            spdlog::warn("Warning: {}", mObjReaderInstance.Warning());
         }
 
-        const tinyobj::attrib_t &attrib = objReaderInstance.GetAttrib();
-        const std::vector<tinyobj::shape_t> &shapes = objReaderInstance.GetShapes();
-        const std::vector<tinyobj::material_t> &materials = objReaderInstance.GetMaterials();
+        // 存储了每一个vertex 的信息，包括 position, texcoords. normals, vertex color
+        const tinyobj::attrib_t &attrib = mObjReaderInstance.GetAttrib();
+        const std::vector<tinyobj::shape_t> &shapes = mObjReaderInstance.GetShapes();
+        const std::vector<tinyobj::material_t> &materials = mObjReaderInstance.GetMaterials();
 
 #ifdef VERTEX_DEDUPLICATION
         // 顶点中有大量的重复，可以对顶点进行除重
