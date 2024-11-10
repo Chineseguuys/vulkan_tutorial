@@ -12,7 +12,10 @@
 #define GLM_FORCE_RADIANS
 // GLM生成的透视投影矩阵默认使用OpenGL深度范围-1.0到1.0
 // 我们需要使用GLM_FORCE_DEPTH_ZERO_TO_ONE定义将其配置为使用0.0到1.0的 Vulkan 范围
+#ifndef GLM_FORCE_DEPTH_ZERO_TO_ONE
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#endif
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -43,6 +46,8 @@
 #include "stb_image.h"
 
 #include "tiny_obj_loader.cc"
+
+#include "Verterx.h"
 
 struct Vertex {
     glm::vec3 mPos;
@@ -103,6 +108,15 @@ struct Vertex {
 namespace std {
     template<> struct hash<Vertex> {
         size_t operator()(Vertex const& vertex) const {
+            return (
+                (hash<glm::vec3>()(vertex.mPos) ^
+                (hash<glm::vec3>()(vertex.mColor) << 1)) >> 1) ^
+                (hash<glm::vec2>()(vertex.mTexCoord) << 1);
+        }
+    };
+
+    template<> struct hash<ops::Vertex> {
+        size_t operator()(ops::Vertex const& vertex) const {
             return (
                 (hash<glm::vec3>()(vertex.mPos) ^
                 (hash<glm::vec3>()(vertex.mColor) << 1)) >> 1) ^
@@ -260,7 +274,7 @@ private:
 
     // vertex buffer
     // load model
-    std::vector<Vertex> mVertices;
+    std::vector<ops::Vertex> mVertices;
     std::vector<uint32_t> mIndices;
     VkBuffer mVertexBuffer;
     VkDeviceMemory mVertexBufferMemory;
@@ -308,6 +322,7 @@ private:
     std::vector<VkImage> mTextureImages;
     std::vector<VkDeviceMemory> mTextureImagesMemory;
     std::vector<VkImageView> mTextureImagesView;
+    std::vector<VkDescriptorImageInfo> mTextureImagesInfo;
     // 我们对于多个纹理，可以使用同一个 sampler?
     // Todo: 能否只使用一个 sampler
 
@@ -344,9 +359,6 @@ private:
 
     void initVulkan()
     {
-        // load model obj
-        loadModel();
-
         createInstance();
         setupDebugMessenger();
         createSurface();
@@ -363,6 +375,8 @@ private:
         createDepthResources();
         // move create frame buffers after create depth resources
         createFrameBuffers();
+        // load model obj
+        loadModel();
         // generate the texture image
         createTextureImages();
         // Todo: 这里需要重新修改
@@ -416,10 +430,16 @@ private:
         // 一旦缓冲区不再使用，绑定到缓冲区对象的内存可能会被释放，因此让我们在缓冲区被销毁后释放它
         vkFreeMemory(mDevice, mVertexBufferMemory, nullptr);
 
-        // 回收 uniform buffer 的内存
+        // 回收 uniform buffer 的内存 rotate matrix and project matrix
         for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i) {
             vkDestroyBuffer(mDevice, mUniformBuffers[i], nullptr);
             vkFreeMemory(mDevice, mUniformBuffersMemory[i], nullptr);
+        }
+
+        // 回收 uniform buffer 的内存， texture index
+        for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+            vkDestroyBuffer(mDevice, mUBOIndexBuffers[i], nullptr);
+            vkFreeMemory(mDevice, mUBOIndexBuffersMemory[i], nullptr);
         }
 
         // destory descriptor pool
@@ -428,11 +448,18 @@ private:
         // destroy sampler
         vkDestroySampler(mDevice, mTextureSampler, nullptr);
         // destroy image view
-        vkDestroyImageView(mDevice, mTextureImageView, nullptr);
+        for (auto& vkImageView : mTextureImagesView) {
+            vkDestroyImageView(mDevice, vkImageView, nullptr);
+        }
 
         // clean the texture image
-        vkDestroyImage(mDevice, mTextureImage, nullptr);
-        vkFreeMemory(mDevice, mTextureImageMemory, nullptr);
+        for (auto& vkImage : mTextureImages) {
+            vkDestroyImage(mDevice, vkImage, nullptr);
+        }
+
+        for (auto& vkImageMemory : mTextureImagesMemory) {
+            vkFreeMemory(mDevice, vkImageMemory, nullptr);
+        }
 
         // destory descriptor set layout
         vkDestroyDescriptorSetLayout(mDevice, mDescriptorSetLayout, nullptr);
@@ -1209,9 +1236,9 @@ private:
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
-        VkVertexInputBindingDescription bindDescription = Vertex::getBindingDescription();
+        VkVertexInputBindingDescription bindDescription = ops::Vertex::getBindingDescription();
         // 4: position, color, texcoord, normal
-        std::array<VkVertexInputAttributeDescription, 4> attributeDescription = Vertex::getAttributeDescription();
+        std::array<VkVertexInputAttributeDescription, 4> attributeDescription = ops::Vertex::getAttributeDescription();
 
         vertexInputInfo.vertexBindingDescriptionCount = 1;
         vertexInputInfo.vertexAttributeDescriptionCount = static_cast<unsigned int>(attributeDescription.size());
@@ -1591,9 +1618,12 @@ private:
     void createDescriptorPool() {
         std::array<VkDescriptorPoolSize, 2> poolSizes{};
         poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+        // Todo: 这里存在一些问题，我们在创建 Descriptor Pool 的时候，需要告知 vulkan 我们需要多少个 descriptor set
+        // 这里我们创建了两个 Uniform buffer object
+        poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT * 2);
+        // 我们还创建了 3 个 texture
         poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        poolSizes[1].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+        poolSizes[1].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT * mTextureImages.size());
 
         VkDescriptorPoolCreateInfo poolInfo{};
         poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -1637,12 +1667,18 @@ private:
             uboIndexBufferInfo.range = sizeof(UBOIndex);
 
             // Todo: 对于创建了纹理数组的情况下，如何设置 Descriptor
-            VkDescriptorImageInfo imageInfo{};
-            imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            imageInfo.imageView = mTextureImageView;
-            imageInfo.sampler = mTextureSampler;
+            std::vector<VkDescriptorImageInfo> imagesInfo{};
+            int imagesNums = mTextureImages.size();
+            imagesInfo.resize(imagesNums);
+            for (int i = 0; i < imagesNums; i++) {
+                imagesInfo[i].imageView = mTextureImagesView[i];
+                // Todo: 所有的 texture 是否可以共用一个 sampler
+                imagesInfo[i].sampler = mTextureSampler;
+                imagesInfo[i].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            }
 
-            std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
+            std::array<VkWriteDescriptorSet, 3> descriptorWrites{};
+            // ubo for rotate matrix and project matrix
             descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
             descriptorWrites[0].dstSet = mDescriptorSets[i];
             descriptorWrites[0].dstBinding = 0;
@@ -1652,14 +1688,24 @@ private:
             descriptorWrites[0].pBufferInfo = &bufferInfo;
             descriptorWrites[0].pImageInfo = nullptr;   // optional
             descriptorWrites[0].pTexelBufferView = nullptr; // optional
-
+            // for texture images
             descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
             descriptorWrites[1].dstSet = mDescriptorSets[i];
             descriptorWrites[1].dstBinding = 1;
             descriptorWrites[1].dstArrayElement = 0;
             descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            descriptorWrites[1].descriptorCount = 1;
-            descriptorWrites[1].pImageInfo = &imageInfo;
+            descriptorWrites[1].descriptorCount = imagesInfo.size();
+            descriptorWrites[1].pImageInfo = imagesInfo.data();
+            // for texture iamges
+            descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrites[2].dstSet = mDescriptorSets[i];
+            descriptorWrites[2].dstBinding = 2;
+            descriptorWrites[2].dstArrayElement = 0;
+            descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            descriptorWrites[2].descriptorCount = 1;
+            descriptorWrites[2].pBufferInfo = &uboIndexBufferInfo;
+            descriptorWrites[2].pImageInfo = nullptr;
+            descriptorWrites[2].pTexelBufferView = nullptr;
 
             vkUpdateDescriptorSets(mDevice,
                 static_cast<uint32_t>(descriptorWrites.size()), 
@@ -1722,7 +1768,11 @@ private:
         samplerIndexLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         samplerIndexLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-        std::array<VkDescriptorSetLayoutBinding, 2> bindings = {uboLayoutBinding, samplerLayoutBinding};
+        std::array<VkDescriptorSetLayoutBinding, 3> bindings = {
+            uboLayoutBinding,
+            samplerLayoutBinding,
+            samplerIndexLayoutBinding
+        };
         // 所有的描述符的绑定，都需要组合到一个 VkDescriptorSetLayout 对象上面
         VkDescriptorSetLayoutCreateInfo layoutInfo{};
         layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
@@ -1798,6 +1848,7 @@ private:
         // ready to issue the draw command for the triangle
         // three vertices and draw one triangle
         //vkCmdDraw(commandBuffer, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
+        // Todo: 对于每一个 Shape (单独的模型) 我们都会使用不同的纹理，使用不同的 indices.
         vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(mIndices.size()), 1, 0, 0, 0);
 
         vkCmdEndRenderPass(commandBuffer);
@@ -1841,7 +1892,7 @@ private:
                 createTextureImage(diffuseTexName, vkImage, vkImageMemory);
                 mTextureImages.push_back(vkImage);
                 mTextureImagesMemory.push_back(vkImageMemory);
-                mTexName2IndexMap.insert(std::pair<std::string, int>(diffuseTexName, index++));
+                mTexName2IndexMap.insert(std::make_pair<>(diffuseTexName, index++));
                 vkImageView = createTextureImageView(vkImage);
                 mTextureImagesView.push_back(vkImageView);
             }
@@ -1854,7 +1905,7 @@ private:
         VkDeviceSize imageSize = texWidth * texHeight * 4;
         spdlog::info("{} load image file {}, dims = [{}x{}], size = {}",
             __func__,
-            TEXTURE_PATH.c_str(),
+            texturePath.c_str(),
             texWidth, texHeight,
             imageSize
         );
@@ -1918,7 +1969,7 @@ private:
     }
 
     VkImageView createTextureImageView(const VkImage& vkImage) {
-        return createImageView(mTextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
+        return createImageView(vkImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
     }
 
     void createTextureSampler() {
@@ -2241,14 +2292,14 @@ private:
 
 #ifdef VERTEX_DEDUPLICATION
         // 顶点中有大量的重复，可以对顶点进行除重
-        std::unordered_map<Vertex, uint32_t> uniqueVertices;
+        std::unordered_map<ops::Vertex, uint32_t> uniqueVertices;
 #else
-        std::vector<Vertex> vertices;
+        std::vector<ops::Vertex> vertices;
 #endif /* VERTEX_DEDUPLICATION */
 
         for (const auto& shape : shapes) {
             for (const auto& index : shape.mesh.indices) {
-                Vertex vertex{};
+                ops::Vertex vertex{};
 
                 vertex.mPos = {
                     attrib.vertices[3 * index.vertex_index + 0],

@@ -7,7 +7,7 @@ set_toolchains("gcc")
 add_defines("USE_SELF_DEFINED_CLEAR_COLOR")
 add_defines("BUG_FIXES")
 add_defines("EXPLICITLY_TRANSITIONNG_DEPTH_IMAGE")
-add_defines("VERTEX_DEDUPLICATION")
+-- add_defines("VERTEX_DEDUPLICATION")
 
 -- debug log print
 if is_mode("debug") then
@@ -28,6 +28,7 @@ target("lighting")
     set_kind("binary")
     add_files("main.cpp")
     add_includedirs("./thrity_part")
+    add_includedirs("./ops")
     add_packages("spdlog::spdlog")
 
     add_links("glfw", "glad", "pthread", "vulkan")
@@ -37,6 +38,7 @@ target("tiny_demo")
     set_kind("binary")
     add_files("tinyobj_demo.cpp")
     add_includedirs("./thrity_part")
+    add_includedirs("./ops")
     add_packages("spdlog::spdlog")
 
     add_links("vulkan", "glfw", "glad", "pthread")
