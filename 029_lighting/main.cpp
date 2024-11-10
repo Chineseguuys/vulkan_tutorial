@@ -48,6 +48,7 @@
 #include "tiny_obj_loader.cc"
 
 #include "Verterx.h"
+#include "Shape.h"
 
 struct Vertex {
     glm::vec3 mPos;
@@ -276,6 +277,8 @@ private:
     // load model
     std::vector<ops::Vertex> mVertices;
     std::vector<uint32_t> mIndices;
+    // 需要根据形状去解析
+    std::vector<ops::Shape_Mesh> mMeshes;
     VkBuffer mVertexBuffer;
     VkDeviceMemory mVertexBufferMemory;
     // index buffer
@@ -1742,6 +1745,13 @@ private:
         memcpy(mUniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
     }
 
+    void updateTextureIndex(uint32_t currentImage ,uint32_t textureIndex) {
+        UBOIndex index;
+        index.u_samplerIndex = textureIndex;
+
+        memcpy(mUBOIndexBuffersMapped[currentImage], &index, sizeof(UBOIndex));
+    }
+
     void createDescriptorSetLayout() {
         VkDescriptorSetLayoutBinding uboLayoutBinding{};
         // 对应 vertex shader 中的 layout(binding = 0) uniform UniformBufferObject
@@ -1830,26 +1840,33 @@ private:
         scissor.extent = {mSwapChainExtent.width, mSwapChainExtent.height};
         vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-        // vertex buffer
-        VkBuffer vertexBuffers[] = {mVertexBuffer};
-        VkDeviceSize offsets[] = {0};
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-        vkCmdBindIndexBuffer(commandBuffer, mIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-        vkCmdBindDescriptorSets(commandBuffer,
-            VK_PIPELINE_BIND_POINT_GRAPHICS,
-            mPipelineLayout,
-            0,
-            1,
-            &mDescriptorSets[mCurrentFrame],
-            0,
-            nullptr
-        );
+        for (auto& mesh : mMeshes) {
+            auto& meshIndices = mesh.mIndices;
+            // 需要更新 uboIndex
+            spdlog::trace("{} update texture index: {}, {}", __func__, imageIndex, mesh.mMeterial_ID);
+            updateTextureIndex(mCurrentFrame, mesh.mMeterial_ID);
+            // vertex buffer
+            VkBuffer vertexBuffers[] = {mVertexBuffer};
+            VkDeviceSize offsets[] = {0};
+            VkDeviceSize indicesOffsets = mesh.mOffset * sizeof(uint32_t);
+            vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+            vkCmdBindIndexBuffer(commandBuffer, mIndexBuffer, indicesOffsets, VK_INDEX_TYPE_UINT32);
+            vkCmdBindDescriptorSets(commandBuffer,
+                VK_PIPELINE_BIND_POINT_GRAPHICS,
+                mPipelineLayout,
+                0,
+                1,
+                &mDescriptorSets[mCurrentFrame],
+                0,
+                nullptr
+            );
 
-        // ready to issue the draw command for the triangle
-        // three vertices and draw one triangle
-        //vkCmdDraw(commandBuffer, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
-        // Todo: 对于每一个 Shape (单独的模型) 我们都会使用不同的纹理，使用不同的 indices.
-        vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(mIndices.size()), 1, 0, 0, 0);
+            // ready to issue the draw command for the triangle
+            // three vertices and draw one triangle
+            //vkCmdDraw(commandBuffer, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
+            // Todo: 对于每一个 Shape (单独的模型) 我们都会使用不同的纹理，使用不同的 indices.
+            vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(meshIndices.size()), 1, 0, 0, 0);
+        }
 
         vkCmdEndRenderPass(commandBuffer);
 
@@ -2290,56 +2307,51 @@ private:
         const std::vector<tinyobj::shape_t> &shapes = mObjReaderInstance.GetShapes();
         const std::vector<tinyobj::material_t> &materials = mObjReaderInstance.GetMaterials();
 
-#ifdef VERTEX_DEDUPLICATION
-        // 顶点中有大量的重复，可以对顶点进行除重
-        std::unordered_map<ops::Vertex, uint32_t> uniqueVertices;
-#else
-        std::vector<ops::Vertex> vertices;
-#endif /* VERTEX_DEDUPLICATION */
+        // 我们先把所有的 vertex 都存储一下，以确认下标, 后面在遍历 shape 的时候，再补全 texcoord 和 
+        uint64_t vertexNums = attrib.vertices.size() / 3;
+        for (int i = 0; i < vertexNums; i++) {
+            ops::Vertex tmpVertex{};
+            tmpVertex.mPos = {
+                attrib.vertices[i * 3 + 0],
+                attrib.vertices[i * 3 + 1],
+                attrib.vertices[i * 3 + 2]
+            };
+            mVertices.push_back(tmpVertex);
+        }
 
-        for (const auto& shape : shapes) {
-            for (const auto& index : shape.mesh.indices) {
-                ops::Vertex vertex{};
+        // 我们需要将所有的顶点的数据存储在一次，indices 的信息存储到每一个 mesh 中，每一个 mesh 会绑定自己的纹理贴图
+        for (auto& shape : shapes) {
+            const tinyobj::mesh_t& mesh = shape.mesh;
+            ops::Shape_Mesh ourmesh;
+            // 这里先认为对于一个 mesh, 其中的所有的面的纹理都位于一张图片，（可能存在一个 mesh中的面有分散在多个纹理中？）
+            ourmesh.mMeterial_ID = mesh.material_ids.empty() ? 0 : mesh.material_ids[0];
 
-                vertex.mPos = {
-                    attrib.vertices[3 * index.vertex_index + 0],
-                    attrib.vertices[3 * index.vertex_index + 1],
-                    attrib.vertices[3 * index.vertex_index + 2]
-                };
-                // normals 法线向量
+            for (auto& index : mesh.indices) {
+                ops::Vertex& vertex = mVertices[index.vertex_index];
+                // update the vertex's normals and texcoords
                 vertex.mNormals = {
                     attrib.normals[3 * index.normal_index + 0],
                     attrib.normals[3 * index.normal_index + 1],
                     attrib.normals[3 * index.normal_index + 2]
                 };
-
                 vertex.mTexCoord = {
                     attrib.texcoords[2 * index.texcoord_index + 0],
 #ifndef BUG_FIXES
                     attrib.texcoords[2 * index.texcoord_index + 1]
 #else
-                    // OBJ 格式假设坐标系统中垂直坐标为 0 表示图像的底部，
-                    // 然而我们上传的图像在 Vulkan 中以从上到下的方向排列，其中 0 表示图像的顶部
-                    // 通过反转纹理坐标的垂直成分来解决这个问题
-                    1.0f - attrib.texcoords[2 * index.texcoord_index + 1],
-#endif /* BUG_FIXES */
+                    1.0 - attrib.texcoords[2 * index.texcoord_index + 1]
+#endif /* BUG_FIXS */
                 };
-                vertex.mColor = {1.0f, 1.0f, 1.0f};
 
-#ifdef VERTEX_DEDUPLICATION
-                if (uniqueVertices.count(vertex) == 0) {
-                    uniqueVertices[vertex] = static_cast<uint32_t>(mVertices.size());
-                    mVertices.push_back(vertex);
-                }
-                mIndices.push_back(uniqueVertices[vertex]);
-#else
-                mVertices.push_back(vertex);
-                mIndices.push_back(mIndices.size());
-#endif /* VERTEX_DEDUPLICATION */
+                // 更新 Shape_Mesh 的 indices, 这里的 index 和 mVertices 对应
+                ourmesh.mIndices.push_back(index.vertex_index);
+                // 我们不希望反复的去传递 indeices 到 gpu 中去，所以保存所有的 indices
+                mIndices.push_back(index.vertex_index);
             }
+            // mesh 的 indices 的偏移量
+            ourmesh.mOffset = mIndices.size() - ourmesh.mIndices.size();
+            mMeshes.push_back(ourmesh);
         }
-        // print vertices size in this model that without duplication
-        spdlog::info("{} mVertices size is {}, mIndices size is {}", __func__, mVertices.size(), mIndices.size());
     }
 
     VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates,

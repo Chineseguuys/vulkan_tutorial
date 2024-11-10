@@ -14,5 +14,5 @@ layout(binding = 2) uniform UBOIndex {
 } selectSampler;
 
 void main() {
-    outColor = vec4(0.6, 0.6, 0.6, 1.0);
+    outColor = texture(texSampler[selectSampler.u_samplerIndex], fragTexCoord, 1.0);
 }
