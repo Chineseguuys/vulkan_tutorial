@@ -337,6 +337,14 @@ private:
     // tiny obj instance
     tinyobj::ObjReader mObjReaderInstance;
 
+    // 按键输入用来控制相机的位置
+    const glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);
+    const glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 mCameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+    float mCameraDeltaTime = 0.0f;
+    float mCameraLastRenderTime = 0.0f;
+    float mCameraSpeedFactor = 4.0f;
+
     void initWindow()
     {
         glfwInit();
@@ -1720,21 +1728,21 @@ private:
     void updateUniformBuffer(uint32_t currentImage) {
         static auto startTime = std::chrono::high_resolution_clock::now();
 
-        auto currentTime = std::chrono::high_resolution_clock::now();
-        float timeDiff = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+        // 更新 camera 位置
+        processInput(mWindow);
 
         UniformBufferObject ubo{};
-        ubo.mModel = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        ubo.mModel = glm::rotate(glm::mat4(1.0f), glm::radians(70.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         //ubo.mModel = glm::rotate(ubo.mModel, timeDiff * glm::radians(22.0f), glm::vec3(0.0f, 0.0f, 1.0f));
         ubo.mView = glm::lookAt(
-            glm::vec3(10.0f, 0.0f, 0.0f), // eyes
-            glm::vec3(0.0f, 0.0f, 0.0f), // center
-            glm::vec3(0.0f, 0.0f, 1.0f)  // up
+            mCameraPos, // eyes
+            mCameraPos + front, // center
+            up  // up
         );
-        ubo.mProj = glm::perspective(glm::radians(90.0f),
+        ubo.mProj = glm::perspective(glm::radians(45.0f),
             mSwapChainExtent.width / static_cast<float>(mSwapChainExtent.height),
             0.1f,
-            10.0f
+            100.0f
         );
         // GLM最初是为OpenGL设计的，其中剪辑坐标的Y坐标是倒置的。
         // 补偿这一问题的最简单方法是翻转投影矩阵中 Y 轴缩放因子的符号。
@@ -1909,6 +1917,7 @@ private:
                 createTextureImage(diffuseTexName, vkImage, vkImageMemory);
                 mTextureImages.push_back(vkImage);
                 mTextureImagesMemory.push_back(vkImageMemory);
+                spdlog::debug("{} texture {} with index {}", __func__, diffuseTexName, index);
                 mTexName2IndexMap.insert(std::make_pair<>(diffuseTexName, index++));
                 vkImageView = createTextureImageView(vkImage);
                 mTextureImagesView.push_back(vkImageView);
@@ -2325,6 +2334,7 @@ private:
             ops::Shape_Mesh ourmesh;
             // 这里先认为对于一个 mesh, 其中的所有的面的纹理都位于一张图片，（可能存在一个 mesh中的面有分散在多个纹理中？）
             ourmesh.mMeterial_ID = mesh.material_ids.empty() ? 0 : mesh.material_ids[0];
+            spdlog::debug("{} with shape {} has meterial id {}", __func__, shape.name, ourmesh.mMeterial_ID);
 
             for (auto& index : mesh.indices) {
                 ops::Vertex& vertex = mVertices[index.vertex_index];
@@ -2382,6 +2392,33 @@ private:
 
     bool hasStencilComponent(VkFormat format) {
         return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
+    }
+
+    // glfw 控制输入
+    void processInput(GLFWwindow* window) {
+        float currentRenderTime = glfwGetTime();
+        mCameraDeltaTime = currentRenderTime - mCameraLastRenderTime;
+        mCameraLastRenderTime = currentRenderTime;
+        float cameraSpeed = mCameraDeltaTime * mCameraSpeedFactor;
+
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+            mCameraPos += cameraSpeed * front;
+        }
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+            mCameraPos -= glm::normalize(glm::cross(front, up)) * cameraSpeed;
+        }
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+            mCameraPos -= cameraSpeed * front;
+        }
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+            mCameraPos += glm::normalize(glm::cross(front, up)) * cameraSpeed;
+        }
+        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
+            mCameraPos += cameraSpeed * up;
+        }
+        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
+            mCameraPos -= cameraSpeed * up;
+        }
     }
 
     static uint32_t calculateMaxMipLevels(uint32_t width, uint32_t height, uint32_t depth) {
