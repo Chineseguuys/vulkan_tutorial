@@ -21,6 +21,24 @@ const std::string obj_path = "./models/final.obj";
 const std::string mtl_path = "./models/final.mtl";
 
 
+bool isAll3VertexOneFace(const tinyobj::mesh_t& mesh) {
+    for (unsigned int value : mesh.num_face_vertices) {
+        if (value != 3) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool uniqueMaterialID(const tinyobj::mesh_t& mesh) {
+    const std::vector<int>& materialIDs = mesh.material_ids;
+    if (materialIDs.empty()) return true;
+
+    return std::all_of(materialIDs.begin() + 1, materialIDs.end(), [&](int val) {
+        return val == materialIDs[0];
+    });
+}
+
 int main(int argc, char* argv[]) {
     tinyobj::ObjReaderConfig readerConfig;
     readerConfig.mtl_search_path = "./models/";
@@ -76,6 +94,8 @@ int main(int argc, char* argv[]) {
         spdlog::info("      face vertices: {} [{}, {} ...]", shape.mesh.num_face_vertices.size(),
             shape.mesh.num_face_vertices[0], shape.mesh.num_face_vertices[1]
         );
+        spdlog::info("      is 3 vertices for all face: {}", isAll3VertexOneFace(shape.mesh));
+        spdlog::info("      is material id unique: {}", uniqueMaterialID(shape.mesh));
         spdlog::info("      merticals id size: {} [{}, {} ...]", shape.mesh.material_ids.size(),
             shape.mesh.material_ids[0],
             shape.mesh.material_ids[1]

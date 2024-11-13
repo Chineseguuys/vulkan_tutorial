@@ -1852,7 +1852,13 @@ private:
             auto& meshIndices = mesh.mIndices;
             // 需要更新 uboIndex
             spdlog::trace("{} update texture index: {}, {}", __func__, imageIndex, mesh.mMeterial_ID);
-            updateTextureIndex(mCurrentFrame, mesh.mMeterial_ID);
+            // 由于这个 ubo 必须和 mesh 的绘制同步，所以只能通过 command buffer 的方式更新，而不使用内存映射的方式更新
+            // 这会带来性能的损失
+            // Todo: 但是 vkCmdUpdateBuffer() 操作必须放在 RenderPass 开始之前，所以这里这样使用也不行
+            UBOIndex index;
+            index.u_samplerIndex = mesh.mMeterial_ID;
+            vkCmdUpdateBuffer(commandBuffer, mUBOIndexBuffers[mCurrentFrame], 0, sizeof(UBOIndex), &index);
+            //updateTextureIndex(mCurrentFrame, mesh.mMeterial_ID);
             // vertex buffer
             VkBuffer vertexBuffers[] = {mVertexBuffer};
             VkDeviceSize offsets[] = {0};
@@ -2334,7 +2340,13 @@ private:
             ops::Shape_Mesh ourmesh;
             // 这里先认为对于一个 mesh, 其中的所有的面的纹理都位于一张图片，（可能存在一个 mesh中的面有分散在多个纹理中？）
             ourmesh.mMeterial_ID = mesh.material_ids.empty() ? 0 : mesh.material_ids[0];
-            spdlog::debug("{} with shape {} has meterial id {}", __func__, shape.name, ourmesh.mMeterial_ID);
+            int faceVerticesNums = mesh.num_face_vertices.empty() ? 0 : mesh.num_face_vertices[0];
+            spdlog::debug("{} with shape {} has meterial id {}, face vertices num {}",
+                __func__,
+                shape.name,
+                ourmesh.mMeterial_ID,
+                faceVerticesNums
+            );
 
             for (auto& index : mesh.indices) {
                 ops::Vertex& vertex = mVertices[index.vertex_index];
