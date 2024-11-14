@@ -14,6 +14,7 @@ struct Vertex {
     glm::vec3 mColor;
     glm::vec2 mTexCoord;
     glm::vec3 mNormals;
+    uint32_t mMaterialID;
 
     // 对于希望在 std::unordered_map 中使用的类，需要提供一个 operator==() function 来判断两个实例是否相同
     bool operator==(const Vertex& other) const {
@@ -37,8 +38,8 @@ struct Vertex {
         return bindingDescription;
     }
 
-    static std::array<VkVertexInputAttributeDescription, 4> getAttributeDescription() {
-        std::array<VkVertexInputAttributeDescription, 4> attributeDescriptions{};
+    static std::array<VkVertexInputAttributeDescription, 5> getAttributeDescription() {
+        std::array<VkVertexInputAttributeDescription, 5> attributeDescriptions{};
 
         attributeDescriptions[0].binding = 0;
         attributeDescriptions[0].location = 0;
@@ -59,6 +60,11 @@ struct Vertex {
         attributeDescriptions[3].location = 3;
         attributeDescriptions[3].format = VK_FORMAT_R32G32B32_SFLOAT;
         attributeDescriptions[3].offset = offsetof(Vertex, mNormals);
+
+        attributeDescriptions[4].binding = 0;
+        attributeDescriptions[4].location = 4;
+        attributeDescriptions[4].format = VK_FORMAT_R32_SINT;
+        attributeDescriptions[4].offset = offsetof(Vertex, mMaterialID);
 
         return attributeDescriptions;
     }

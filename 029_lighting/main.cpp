@@ -1249,7 +1249,7 @@ private:
 
         VkVertexInputBindingDescription bindDescription = ops::Vertex::getBindingDescription();
         // 4: position, color, texcoord, normal
-        std::array<VkVertexInputAttributeDescription, 4> attributeDescription = ops::Vertex::getAttributeDescription();
+        std::array<VkVertexInputAttributeDescription, 5> attributeDescription = ops::Vertex::getAttributeDescription();
 
         vertexInputInfo.vertexBindingDescriptionCount = 1;
         vertexInputInfo.vertexAttributeDescriptionCount = static_cast<unsigned int>(attributeDescription.size());
@@ -1857,7 +1857,6 @@ private:
             // Todo: 但是 vkCmdUpdateBuffer() 操作必须放在 RenderPass 开始之前，所以这里这样使用也不行
             UBOIndex index;
             index.u_samplerIndex = mesh.mMeterial_ID;
-            vkCmdUpdateBuffer(commandBuffer, mUBOIndexBuffers[mCurrentFrame], 0, sizeof(UBOIndex), &index);
             //updateTextureIndex(mCurrentFrame, mesh.mMeterial_ID);
             // vertex buffer
             VkBuffer vertexBuffers[] = {mVertexBuffer};
@@ -2347,7 +2346,9 @@ private:
                 ourmesh.mMeterial_ID,
                 faceVerticesNums
             );
-
+            
+            // 为了 material ID, 每三个顶点构成的一个面共享同一个纹理 id
+            int _materialID = 0;
             for (auto& index : mesh.indices) {
                 ops::Vertex& vertex = mVertices[index.vertex_index];
                 // update the vertex's normals and texcoords
@@ -2364,6 +2365,9 @@ private:
                     1.0 - attrib.texcoords[2 * index.texcoord_index + 1]
 #endif /* BUG_FIXS */
                 };
+                // 每三个顶点构成的一个面，共用一个 material ID
+                vertex.mMaterialID = mesh.material_ids[static_cast<int>(_materialID / 3)];
+                _materialID += 1;
 
                 // 更新 Shape_Mesh 的 indices, 这里的 index 和 mVertices 对应
                 ourmesh.mIndices.push_back(index.vertex_index);
