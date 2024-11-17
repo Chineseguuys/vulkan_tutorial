@@ -50,72 +50,8 @@
 #include "Verterx.h"
 #include "Shape.h"
 
-struct Vertex {
-    glm::vec3 mPos;
-    glm::vec3 mColor;
-    glm::vec2 mTexCoord;
-    glm::vec3 mNormals;
-
-    // 对于希望在 std::unordered_map 中使用的类，需要提供一个 operator==() function 来判断两个实例是否相同
-    bool operator==(const Vertex& other) const {
-        return mPos == other.mPos && mColor == other.mColor && mTexCoord == other.mTexCoord;
-    }
-
-    static VkVertexInputBindingDescription getBindingDescription() {
-        VkVertexInputBindingDescription bindingDescription{};
-
-        // The binding parameter specifies the index of the binding in the array of bindings
-        // 你可能有多组 vertex 数据分别绘制不同的物品(例如 A 用来绘制三角形， B 用来绘制圆形等等)
-        // gpu 在绘制的时候，可以同时绑定多组 vertex 数据，每一组的数据需要一个 binding 点，值从 0 开始
-        // gpu 支持的同时绑定的 vertex 组的最大数量可以通过 vkGetPhysicalDeviceProperties() api 来进行查询
-        bindingDescription.binding = 0;
-        // 数据的 stride
-        // The stride parameter specifies the number of bytes from one entry to the next
-        bindingDescription.stride = sizeof(Vertex);
-        // 查找下一个数据的时机，在遍历每一个节点的时候，就查找下一个数据
-        bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-        return bindingDescription;
-    }
-
-    static std::array<VkVertexInputAttributeDescription, 4> getAttributeDescription() {
-        std::array<VkVertexInputAttributeDescription, 4> attributeDescriptions{};
-
-        attributeDescriptions[0].binding = 0;
-        attributeDescriptions[0].location = 0;
-        attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;  // for vec3
-        attributeDescriptions[0].offset = offsetof(Vertex, mPos);
-
-        attributeDescriptions[1].binding = 0;
-        attributeDescriptions[1].location = 1;
-        attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;   // for vec3
-        attributeDescriptions[1].offset = offsetof(Vertex, mColor);
-
-        attributeDescriptions[2].binding = 0;
-        attributeDescriptions[2].location = 2;
-        attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
-        attributeDescriptions[2].offset = offsetof(Vertex, mTexCoord);
-
-        attributeDescriptions[3].binding = 0;
-        attributeDescriptions[3].location = 3;
-        attributeDescriptions[3].format = VK_FORMAT_R32G32B32_SFLOAT;
-        attributeDescriptions[3].offset = offsetof(Vertex, mNormals);
-
-        return attributeDescriptions;
-    }
-};
-
 // 对于需要在 std::unordered_map 中使用的类，还需要提供一个 std::hash 的类特化函数用于在 std::unordered_map 中计算 hash 值
 namespace std {
-    template<> struct hash<Vertex> {
-        size_t operator()(Vertex const& vertex) const {
-            return (
-                (hash<glm::vec3>()(vertex.mPos) ^
-                (hash<glm::vec3>()(vertex.mColor) << 1)) >> 1) ^
-                (hash<glm::vec2>()(vertex.mTexCoord) << 1);
-        }
-    };
-
     template<> struct hash<ops::Vertex> {
         size_t operator()(ops::Vertex const& vertex) const {
             return (
@@ -137,13 +73,12 @@ struct UBOIndex {
     int u_samplerIndex;
 };
 
-const uint32_t WIDTH = 800;
-const uint32_t HEIGHT = 600;
+const uint32_t WIDTH = 1200;
+const uint32_t HEIGHT = 900;
 
 // https://skfb.ly/VAKF
-const std::string MODEL_PATH = "./models/final.obj";
-const std::string MTL_PATH   = "./models/final.mtl";
-const std::string TEXTURE_PATH = "./textures/viking_room.png";
+const std::string MODEL_PATH = "./models/house.obj";
+const std::string MTL_PATH   = "./models/house.mtl";
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -343,7 +278,7 @@ private:
     glm::vec3 mCameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
     float mCameraDeltaTime = 0.0f;
     float mCameraLastRenderTime = 0.0f;
-    float mCameraSpeedFactor = 4.0f;
+    float mCameraSpeedFactor = 0.8f;
 
     void initWindow()
     {
@@ -2346,7 +2281,7 @@ private:
                 ourmesh.mMeterial_ID,
                 faceVerticesNums
             );
-            
+
             // 为了 material ID, 每三个顶点构成的一个面共享同一个纹理 id
             int _materialID = 0;
             for (auto& index : mesh.indices) {

@@ -87,8 +87,6 @@ void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
 
 > 把 for 循环改到 drawFrame() 中也不行
 
-
-
 问题出在了 record command buffer 上。
 
 ```cpp
@@ -101,11 +99,7 @@ void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
         }
 ```
 
-
-
 recordCommandBuffer 只是记录命令，真正的执行命令在后面 vkQueueSubmit 的时候，所以这里使用 for 循环会导致 command buffer 只记录了最后一次的 buffer。所以只会绘制最后一次的命令。
-
-
 
 > 使用 vkCmdUpdateBuffer() 去将更新 ubo 放在 command buffer 的操作中 ？
 
@@ -147,10 +141,8 @@ for (auto& mesh : mMeshes) {
         }
 ```
 
+# 怀疑 texcoords 的问题。
 
+![screenshot1](./20241115_000009.png)
 
-> 其他方法
-
-
-
-
+看上去纹理的 material_id 没有问题，而是 texcoords 有问题，绘制的画面，纹理是扭曲的。

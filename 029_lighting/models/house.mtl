@@ -1,0 +1,37 @@
+# Blender 4.2.3 LTS MTL File: '无标题.blend'
+# www.blender.org
+
+newmtl brick
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /home/yanjiangha/mirrors/sda1_doc/code/vulkan_turial/book_learning_vulkan/abandoned-mansion/textures/brick_BaseColor.png
+map_Ns /home/yanjiangha/mirrors/sda1_doc/code/vulkan_turial/book_learning_vulkan/abandoned-mansion/textures/brick_Roughness.png
+map_Bump -bm 1.000000 /home/yanjiangha/mirrors/sda1_doc/code/vulkan_turial/book_learning_vulkan/abandoned-mansion/textures/brick_Normal.png
+
+newmtl cement
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd /home/yanjiangha/mirrors/sda1_doc/code/vulkan_turial/book_learning_vulkan/abandoned-mansion/textures/cement_BaseColor.png
+map_Ns /home/yanjiangha/mirrors/sda1_doc/code/vulkan_turial/book_learning_vulkan/abandoned-mansion/textures/cement_Roughness.png
+map_refl /home/yanjiangha/mirrors/sda1_doc/code/vulkan_turial/book_learning_vulkan/abandoned-mansion/textures/cement_Metallic.png
+map_Bump -bm 1.000000 /home/yanjiangha/mirrors/sda1_doc/code/vulkan_turial/book_learning_vulkan/abandoned-mansion/textures/cement_Normal.png
+
+newmtl tile
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd /home/yanjiangha/mirrors/sda1_doc/code/vulkan_turial/book_learning_vulkan/abandoned-mansion/textures/tile_BaseColor.png
+map_Ns /home/yanjiangha/mirrors/sda1_doc/code/vulkan_turial/book_learning_vulkan/abandoned-mansion/textures/tile_Roughness.png
+map_refl /home/yanjiangha/mirrors/sda1_doc/code/vulkan_turial/book_learning_vulkan/abandoned-mansion/textures/tile_Metallic.png
+map_d /home/yanjiangha/mirrors/sda1_doc/code/vulkan_turial/book_learning_vulkan/abandoned-mansion/textures/tile_Alpha.png
+map_Bump -bm 1.000000 /home/yanjiangha/mirrors/sda1_doc/code/vulkan_turial/book_learning_vulkan/abandoned-mansion/textures/tile_Normal.png
