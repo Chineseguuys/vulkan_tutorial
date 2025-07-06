@@ -319,6 +319,10 @@ private:
             spdlog::trace("{} iamgeSharingMode = {}", __func__, "VK_SHARING_MODE_EXCLUSIVE");
             // 图像每次由一个队列族拥有，在另一个队列族中使用之前必须明确转移所有权。 此选项可提供最佳性能。
             createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+#if 1
+            createInfo.queueFamilyIndexCount = 2;
+            createInfo.pQueueFamilyIndices = queueFamilyIndices;
+#endif
         }
 
         // 如果交换链中的图像支持某种变换，我们可以指定将该变换应用于交换链中的图像，例如顺时针旋转 90 度或水平翻转

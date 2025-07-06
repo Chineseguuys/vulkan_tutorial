@@ -17,3 +17,5 @@ target("image_views")
     add_packages("spdlog::spdlog")
 
     add_links("glfw", "glad", "pthread", "vulkan")
+
+    set_rundir("$(projectdir)/build")  -- 项目根目录下的 bin 文件夹

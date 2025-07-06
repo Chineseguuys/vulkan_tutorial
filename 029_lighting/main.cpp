@@ -278,7 +278,7 @@ private:
     glm::vec3 mCameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
     float mCameraDeltaTime = 0.0f;
     float mCameraLastRenderTime = 0.0f;
-    float mCameraSpeedFactor = 0.8f;
+    float mCameraSpeedFactor = 2.0f;
 
     void initWindow()
     {
@@ -2268,50 +2268,66 @@ private:
             mVertices.push_back(tmpVertex);
         }
 
-        // 我们需要将所有的顶点的数据存储在一次，indices 的信息存储到每一个 mesh 中，每一个 mesh 会绑定自己的纹理贴图
-        for (auto& shape : shapes) {
-            const tinyobj::mesh_t& mesh = shape.mesh;
-            ops::Shape_Mesh ourmesh;
-            // 这里先认为对于一个 mesh, 其中的所有的面的纹理都位于一张图片，（可能存在一个 mesh中的面有分散在多个纹理中？）
-            ourmesh.mMeterial_ID = mesh.material_ids.empty() ? 0 : mesh.material_ids[0];
-            int faceVerticesNums = mesh.num_face_vertices.empty() ? 0 : mesh.num_face_vertices[0];
-            spdlog::debug("{} with shape {} has meterial id {}, face vertices num {}",
-                __func__,
-                shape.name,
-                ourmesh.mMeterial_ID,
-                faceVerticesNums
-            );
+        for (size_t shapeIndex = 0; shapeIndex < shapes.size(); ++shapeIndex) {
+            ops::Shape_Mesh ourMesh;
+            ourMesh.mName = shapes[shapeIndex].name;
+            ourMesh.mMeterial_ID = 0; // 这个变量现在没有用了
+            for (size_t meshIndex = 0; meshIndex < shapes[shapeIndex].mesh.indices.size() / 3; ++meshIndex) {
+                tinyobj::index_t idx0 = shapes[shapeIndex].mesh.indices[meshIndex * 3 + 0];
+                tinyobj::index_t idx1 = shapes[shapeIndex].mesh.indices[meshIndex * 3 + 1];
+                tinyobj::index_t idx2 = shapes[shapeIndex].mesh.indices[meshIndex * 3 + 2];
 
-            // 为了 material ID, 每三个顶点构成的一个面共享同一个纹理 id
-            int _materialID = 0;
-            for (auto& index : mesh.indices) {
-                ops::Vertex& vertex = mVertices[index.vertex_index];
-                // update the vertex's normals and texcoords
-                vertex.mNormals = {
-                    attrib.normals[3 * index.normal_index + 0],
-                    attrib.normals[3 * index.normal_index + 1],
-                    attrib.normals[3 * index.normal_index + 2]
-                };
-                vertex.mTexCoord = {
-                    attrib.texcoords[2 * index.texcoord_index + 0],
-#ifndef BUG_FIXES
-                    attrib.texcoords[2 * index.texcoord_index + 1]
-#else
-                    1.0 - attrib.texcoords[2 * index.texcoord_index + 1]
-#endif /* BUG_FIXS */
-                };
-                // 每三个顶点构成的一个面，共用一个 material ID
-                vertex.mMaterialID = mesh.material_ids[static_cast<int>(_materialID / 3)];
-                _materialID += 1;
+                ops::Vertex& vertex0 = mVertices[idx0.vertex_index];
+                ops::Vertex& vertex1 = mVertices[idx1.vertex_index];
+                ops::Vertex& vertex2 = mVertices[idx2.vertex_index];
 
-                // 更新 Shape_Mesh 的 indices, 这里的 index 和 mVertices 对应
-                ourmesh.mIndices.push_back(index.vertex_index);
-                // 我们不希望反复的去传递 indeices 到 gpu 中去，所以保存所有的 indices
-                mIndices.push_back(index.vertex_index);
+                int currentMaterialID = shapes[shapeIndex].mesh.material_ids[meshIndex];
+                // texcoords
+                vertex0.mTexCoord = {
+                    attrib.texcoords[2 * idx0.texcoord_index],
+                    1.0f - attrib.texcoords[2 * idx0.texcoord_index + 1]
+                };
+                vertex1.mTexCoord = {
+                    attrib.texcoords[2 * idx1.texcoord_index],
+                    1.0f - attrib.texcoords[2 * idx1.texcoord_index + 1]
+                };
+                vertex2.mTexCoord = {
+                    attrib.texcoords[2 * idx2.texcoord_index],
+                    1.0f - attrib.texcoords[2 * idx2.texcoord_index + 1]
+                };
+
+                // normals
+                vertex0.mNormals = {
+                    attrib.normals[idx0.normal_index * 3],
+                    attrib.normals[idx0.normal_index * 3 + 1],
+                    attrib.normals[idx0.normal_index * 3 + 2]
+                };
+                vertex1.mNormals = {
+                    attrib.normals[idx1.normal_index * 3],
+                    attrib.normals[idx1.normal_index * 3 + 1],
+                    attrib.normals[idx1.normal_index * 3 + 2]
+                };
+                vertex2.mNormals = {
+                    attrib.normals[idx2.normal_index * 3],
+                    attrib.normals[idx2.normal_index * 3 + 1],
+                    attrib.normals[idx2.normal_index * 3 + 2]
+                };
+
+                // materialID
+                vertex0.mMaterialID = currentMaterialID;
+                vertex1.mMaterialID = currentMaterialID;
+                vertex2.mMaterialID = currentMaterialID;
+
+                mIndices.push_back(idx0.vertex_index);
+                mIndices.push_back(idx1.vertex_index);
+                mIndices.push_back(idx2.vertex_index);
+
+                ourMesh.mIndices.push_back(idx0.vertex_index);
+                ourMesh.mIndices.push_back(idx1.vertex_index);
+                ourMesh.mIndices.push_back(idx2.vertex_index);
             }
-            // mesh 的 indices 的偏移量
-            ourmesh.mOffset = mIndices.size() - ourmesh.mIndices.size();
-            mMeshes.push_back(ourmesh);
+            ourMesh.mOffset = mIndices.size() - ourMesh.mIndices.size();
+            mMeshes.push_back(ourMesh);
         }
     }
 

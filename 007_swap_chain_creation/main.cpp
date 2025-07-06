@@ -311,6 +311,11 @@ private:
             spdlog::trace("{} iamgeSharingMode = {}", __func__, "VK_SHARING_MODE_EXCLUSIVE");
             // 图像每次由一个队列族拥有，在另一个队列族中使用之前必须明确转移所有权。 此选项可提供最佳性能。
             createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+#if 1
+            // 这里没有设置 queue family 的信息，运行没有报错？ why
+            createInfo.queueFamilyIndexCount = 2;
+            createInfo.pQueueFamilyIndices = queueFamilyIndices;
+#endif
         }
 
         // 如果交换链中的图像支持某种变换，我们可以指定将该变换应用于交换链中的图像，例如顺时针旋转 90 度或水平翻转
@@ -320,6 +325,7 @@ private:
         // 您几乎总是希望忽略 alpha 通道，因此需要使用 VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR
         createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
         createInfo.presentMode = presentMode;
+        // 当设置为 VK_TRUE 时，表示 Vulkan 允许驱动程序对交换链图像进行裁剪优化，以提高性能。例如，如果窗口被其他窗口部分遮挡，或被最小化，驱动可能跳过渲染不可见区域的像素。
         createInfo.clipped = VK_TRUE;
 
         createInfo.oldSwapchain = VK_NULL_HANDLE;

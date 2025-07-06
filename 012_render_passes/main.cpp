@@ -882,7 +882,7 @@ private:
 
     static std::vector<char> readFile(const std::string& fileName) {
         std::ifstream file(fileName, std::ios::ate | std::ios::binary);
-        
+
         if (!file.is_open()) {
             spdlog::error("{} failed to open file {}", __func__, fileName);
             throw std::runtime_error("failed to open file");

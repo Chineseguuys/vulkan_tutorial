@@ -17,3 +17,5 @@ target("image_views")
     add_packages("spdlog::spdlog")
 
     add_links("glfw", "glad", "pthread", "vulkan")
+
+    set_rundir("$(projectdir)/build")

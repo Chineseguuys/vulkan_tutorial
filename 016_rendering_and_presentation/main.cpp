@@ -146,6 +146,12 @@ private:
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
+        //  try to force use x11 in glfw
+        if (glfwPlatformSupported(GLFW_PLATFORM_X11)) {
+            spdlog::debug("Use x11 for glfw");
+            glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
+        }
+
         mWindow = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
         if (mWindow == nullptr) {
             spdlog::error("{} glfwCreateWindow failed", __func__);
