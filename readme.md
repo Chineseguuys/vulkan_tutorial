@@ -103,10 +103,15 @@ vkAllocateMemory(device, &allocInfo, nullptr, &bufferMemory);
 // 将分配的内存绑定到缓冲区
 vkBindBufferMemory(device, buffer, bufferMemory, 0);
 ```
-
 ### 总结
 
 - `VkBuffer` 是一种描述数据的结构，不涉及实际内存。
 - `VkDeviceMemory` 则是实际的设备内存分配，通过绑定操作，`VkBuffer` 使用 `VkDeviceMemory` 中的内存。
 
 两者结合后，GPU 才能访问 `VkBuffer` 中的数据。
+
+### RenderDoc 抓帧
+
+从 gui 启动 renderdoc， 会无法抓帧；但是从命令行启动 renderdoc 可以正常抓帧；
+
+glfw 无法抓取，但是 sdl 和 xcb 可以正常进行抓取；wayland下无法抓取，X11 下可以抓；
