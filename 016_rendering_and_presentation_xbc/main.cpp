@@ -292,7 +292,7 @@ private:
             glfwPollEvents();
             drawFrame();
         }
-#endif
+#endif /* USING_GLFW */
 
 #ifdef USING_SDL2
         bool isRunning = true;
