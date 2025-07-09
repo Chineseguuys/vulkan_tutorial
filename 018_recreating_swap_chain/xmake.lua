@@ -6,6 +6,9 @@ add_defines("USE_SELF_DEFINED_CLEAR_COLOR")
 
 -- debug log print
 add_defines("LOG_DEBUG")
+--add_defines("USING_GLFW")
+--add_defines("USING_SDL2")
+add_defines("USING_XCB")
 
 if is_mode("debug") then
     set_symbols("debug")
@@ -22,4 +25,4 @@ target("recreating_swapchain")
 
     add_packages("spdlog::spdlog")
 
-    add_links("glfw", "glad", "pthread", "vulkan")
+    add_links("glfw", "glad", "pthread", "vulkan", "xcb")

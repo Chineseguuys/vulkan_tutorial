@@ -1,11 +1,21 @@
+#include <cstddef>
 #include <stdlib.h>
 #include <cstdint>
 #include <set>
 #include <spdlog/common.h>
 #include <stdexcept>
 #include <vulkan/vulkan_core.h>
+#ifdef USING_GLFW
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
+#endif /* USING_GLFW */
+
+#ifdef USING_XCB
+#include <xcb/xcb.h>
+#include <xcb/xcb_icccm.h>
+#include <xcb/xproto.h>
+#include <vulkan/vulkan_xcb.h>
+#endif /* USING_XCB */
 
 #include <iostream>
 #include <vector>
@@ -97,7 +107,18 @@ public:
     }
 
 private:
+#ifdef USING_GLFW
     GLFWwindow *mWindow;
+#endif /* USING_GLFW */
+
+#ifdef USING_XCB
+    xcb_connection_t*   mXCBConnection;
+    xcb_screen_t*       mXCBScreen;
+    xcb_window_t        mXCBWindow;
+
+    xcb_atom_t          mXCBWMProtocols;
+    xcb_atom_t          mXCBWMDeleteWindow;
+#endif /* USING_XCB */
 
     VkInstance mInstance;
     VkDebugUtilsMessengerEXT mDebugMessenger;
@@ -144,6 +165,7 @@ private:
 
     void initWindow()
     {
+#ifdef USING_GLFW
         glfwInit();
 
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -157,13 +179,82 @@ private:
 
         glfwSetWindowUserPointer(mWindow, this);
         glfwSetFramebufferSizeCallback(mWindow, frameBufferResizedCallback);
+#endif /* USING_GLFW */
+
+#ifdef USING_XCB
+        mXCBConnection = xcb_connect(nullptr, nullptr);
+        if (xcb_connection_has_error(mXCBConnection)) {
+            spdlog::error("Can not connect to X Server!");
+            throw std::runtime_error("Can not connect to X Server.");
+        }
+
+        const xcb_setup_t* setup = xcb_get_setup(mXCBConnection);
+        mXCBScreen = xcb_setup_roots_iterator(setup).data;
+
+        uint32_t mask = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK;
+        uint32_t values[2] = {
+            mXCBScreen->black_pixel,
+            XCB_EVENT_MASK_EXPOSURE | XCB_EVENT_MASK_KEY_PRESS | XCB_EVENT_MASK_STRUCTURE_NOTIFY
+        };
+
+        mXCBWindow = xcb_generate_id(mXCBConnection);
+        xcb_create_window(
+            mXCBConnection,
+            0,
+            mXCBWindow,
+            mXCBScreen->root,
+            0, 0, WIDTH, HEIGHT,
+            0,
+            0,
+            mXCBScreen->root_visual,
+            mask, values
+        );
+
+        // 处理窗口事件
+        xcb_intern_atom_cookie_t protocolsCookie = xcb_intern_atom(mXCBConnection, 1, 12, "WM_PROTOCOLS");
+        xcb_intern_atom_cookie_t deleteCookie = xcb_intern_atom(mXCBConnection, 0, 16, "WM_DELETE_WINDOW");
+
+        xcb_intern_atom_reply_t *protocolsReply = xcb_intern_atom_reply(mXCBConnection, protocolsCookie, NULL);
+        xcb_intern_atom_reply_t *deleteReply = xcb_intern_atom_reply(mXCBConnection, deleteCookie, NULL);
+
+        if (!protocolsReply || !deleteReply) {
+            spdlog::error("Can not get Atom protocols!");
+        } else {
+            mXCBWMProtocols = protocolsReply->atom;
+            mXCBWMDeleteWindow = deleteReply->atom;
+
+            xcb_change_property(mXCBConnection, 
+                XCB_PROP_MODE_REPLACE, 
+                mXCBWindow, 
+                mXCBWMProtocols, 
+                XCB_ATOM_ATOM, 
+                32, 
+                1, 
+                &mXCBWMDeleteWindow
+            );
+
+            free(protocolsReply);
+            free(deleteReply);
+        }
+
+        xcb_change_property(mXCBConnection,
+            XCB_PROP_MODE_REPLACE, mXCBWindow,
+            XCB_ATOM_WM_NAME, XCB_ATOM_STRING,
+            8, strlen("Vulkan Demo"), "Vulkan Demo"
+        );
+
+        xcb_map_window(mXCBConnection, mXCBWindow);
+        xcb_flush(mXCBConnection);
+#endif /* USING_XCB */
     }
 
+#ifdef USING_GLFW
     static void frameBufferResizedCallback(GLFWwindow* window, int width, int height) {
         spdlog::debug("{}: window changed to [{}x{}]", __func__, width, height);
         auto app = reinterpret_cast<HelloTriangleApplication*>(glfwGetWindowUserPointer(window));
         app->mFrameBufferResized = true;
     }
+#endif /* USING_GLFW */
 
     void initVulkan()
     {
@@ -183,19 +274,82 @@ private:
     }
 
     void createSurface() {
+#ifdef USING_GLFW
         if (glfwCreateWindowSurface(mInstance, mWindow, nullptr, &mSurface) != VK_SUCCESS) {
             spdlog::error("{} glfwCreateWindowSurface failed", __func__);
             throw  std::runtime_error("failed to create window surface!");
         }
+#endif /* USING_GLFW */
+
+#ifdef USING_XCB
+        VkXcbSurfaceCreateInfoKHR createInfo = {
+            .sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR,
+            .connection = mXCBConnection,
+            .window = mXCBWindow
+        };
+
+        VkResult err = vkCreateXcbSurfaceKHR(mInstance, &createInfo, nullptr, &mSurface);
+        if (err) {
+            spdlog::error("Can not create VkSurface!");
+            std::runtime_error("Can not create VkSurface!");
+        }
+#endif  /* USING_XCB */
     }
 
     void mainLoop()
     {
+#ifdef USING_GLFW
         while (!glfwWindowShouldClose(mWindow))
         {
             glfwPollEvents();
             drawFrame();
         }
+#endif /* USING_GLFW */
+
+#ifdef USING_XCB
+        bool isRunning = true;
+        xcb_generic_event_t* event;
+        while (isRunning) {
+            while ((event = xcb_poll_for_event(mXCBConnection))) {
+                switch(event->response_type & ~0x80) {
+                    case XCB_CLIENT_MESSAGE: {
+                        xcb_client_message_event_t *cm = (xcb_client_message_event_t*) event;
+
+                        if (cm->data.data32[0] == mXCBWMDeleteWindow) {
+                            spdlog::info("Need Close XCB Window.");
+                            isRunning = false;
+                        }
+                        break;
+                    }
+
+                    case XCB_CONFIGURE_NOTIFY: {
+                        mFrameBufferResized = true;
+                        xcb_configure_notify_event_t *cfg =  (xcb_configure_notify_event_t *)event;
+                        uint16_t newWidth = cfg->width;
+                        uint16_t newHeight = cfg->height;
+                        spdlog::debug("XCB Window size changed to {}x{}", newWidth, newHeight);
+                        break;
+                    }
+
+                    case XCB_EXPOSE: {
+                        drawFrame();
+                        break;
+                    }
+
+                    case XCB_KEY_PRESS: {
+                        xcb_key_press_event_t* key = (xcb_key_press_event_t*) event;
+                        if (key->detail == 9) {
+                            isRunning = false;
+                        }
+                        break;
+                    }
+                }
+                free(event);
+            }
+
+            drawFrame();
+        }
+#endif /* USING_XCB */
 
         vkDeviceWaitIdle(mDevice);
     }
@@ -225,7 +379,7 @@ private:
         //}
 
         //vkDestroySwapchainKHR(mDevice, mSwapChain, nullptr);
-        
+
         vkDestroyDevice(mDevice, nullptr);
 
         if (enableValidationLayers)
@@ -236,8 +390,15 @@ private:
         vkDestroySurfaceKHR(mInstance, mSurface, nullptr);
         vkDestroyInstance(mInstance, nullptr);
 
+#ifdef USING_GLFW
         glfwDestroyWindow(mWindow);
         glfwTerminate();
+#endif /* USING_GLFW */
+
+#ifdef USING_XCB
+        xcb_destroy_window(mXCBConnection, mXCBWindow);
+        xcb_disconnect(mXCBConnection);
+#endif /* USING_XCB */
     }
 
     void drawFrame() {
@@ -669,10 +830,20 @@ private:
 
     std::vector<const char *> getRequiredExtensions()
     {
+#ifdef USING_GLFW
         uint32_t glfwExtensionCount = 0;
         const char **glfwExtensions;
         glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
         std::vector<const char *> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+#endif /* USING_GLFW */
+
+#ifdef USING_XCB
+        std::vector<const char *> extensions {
+            VK_KHR_SURFACE_EXTENSION_NAME,
+            VK_KHR_XCB_SURFACE_EXTENSION_NAME
+        };
+#endif /* USING_XCB */
+
 #if 1
         for (const char* extension : extensions) {
             spdlog::trace("{} glfwExtension: {}", __func__, extension);
@@ -797,8 +968,21 @@ private:
             return capabilities.currentExtent;
         } else {
             int width, height;
+#ifdef USING_GLFW
             glfwGetFramebufferSize(mWindow, &width, &height);
             spdlog::trace("{} glfwGetFrameBufferSize [{}x{}]", __func__, width, height);
+#endif /* USING_GLFW */
+
+#ifdef USING_XCB
+            xcb_get_geometry_cookie_t cookie = xcb_get_geometry(mXCBConnection, mXCBWindow);
+            xcb_get_geometry_reply_t *reply = xcb_get_geometry_reply(mXCBConnection, cookie, NULL);
+            if (reply) {
+                width = reply->width;   // 窗口宽度
+                height = reply->height; // 窗口高度
+                spdlog::debug("XCB Window size: {} x {}", width, height);
+                free(reply);
+            }
+#endif /* USING_XCB */
 
             VkExtent2D actualExtent = {
                 static_cast<uint32_t>(width),
